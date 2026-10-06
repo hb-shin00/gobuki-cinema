@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Claude Code
+.claude/
+
+# Other HTML files (not for public share)
+admin.html
+
+# Working/reference folders
+output/
+KDSMD/
+design/
+
+# Reference video (large, not used by cinema HTML)
+resource/*.mov
