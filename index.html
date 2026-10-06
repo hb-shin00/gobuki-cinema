@@ -144,16 +144,17 @@
     /* ============================================================
        App shell
        ============================================================ */
+    /* 베이스 해상도: 393 x 852 (iPhone 15/16 Pro 기준) */
     .app {
       position: relative;
       min-height: 100dvh;
-      max-width: 480px;
+      max-width: 393px;
       margin: 0 auto;
       background: var(--surface-base);
       overflow: hidden;
       box-shadow: 0 0 40px rgba(28, 28, 30, 0.05);
     }
-    @media (min-width: 481px) {
+    @media (min-width: 394px) {
       body { padding: var(--sp-32) 0; }
       .app { border-radius: var(--r-2xl); min-height: calc(100dvh - 64px); }
     }
@@ -411,24 +412,31 @@
       position: relative;
       z-index: 5;
       text-align: center;
-      /* 최상단과 title 사이 간격 80px (nav 56 + 여유 24) */
-      padding: var(--sp-40) var(--sp-24) var(--sp-20);
+      /* 최상단 80px + L/R 20px padding */
+      padding: var(--sp-40) 20px var(--sp-20);
       background: transparent;
     }
     .intro__title {
       font-family: var(--font-hand);
-      font-size: 28px;
+      font-size: 24px;        /* 디자인 spec */
       font-weight: 400;
       color: var(--fg-base);
-      line-height: 1.3;
-      letter-spacing: 0.5px;
-      margin: 0 0 var(--sp-8);
+      /* fig: 타이틀 컬러와 동일한 stroke 0.2 (글자 두께 보강) */
+      -webkit-text-stroke: 0.2px var(--fg-base);
+      text-stroke: 0.2px var(--fg-base);
+      paint-order: stroke fill;
+      line-height: 1.35;
+      letter-spacing: 0.3px;
+      margin: 0 0 var(--sp-12);
     }
     .intro__subtitle {
-      font-size: 13px;
+      font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+      font-size: 16px;        /* 디자인 spec */
+      font-weight: 400;
       color: var(--fg-secondary);
       margin: 0;
       letter-spacing: -0.01em;
+      line-height: 1.5;
     }
 
     /* Intro scene bubble positioning */
@@ -451,18 +459,22 @@
       padding: var(--sp-16) 0 var(--sp-32);
     }
     .form-page__title {
-      font-size: 28px;
-      font-weight: 800;
+      font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+      font-size: 26px;              /* 디자인 spec */
+      font-weight: 700;             /* bold */
       color: var(--fg-base);
       letter-spacing: -0.025em;
-      margin: 0 0 var(--sp-16);
+      margin: 0 0 var(--sp-12);     /* title-subtitle 간격 12 */
       line-height: 1.3;
     }
     .form-page__desc {
-      font-size: 15px;
+      font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+      font-size: 16px;              /* 디자인 spec */
+      font-weight: 400;
       color: var(--fg-tertiary);
       margin: 0;
       letter-spacing: -0.01em;
+      line-height: 1.5;
     }
     .form {
       display: flex;
@@ -505,7 +517,8 @@
       font-size: 12.5px;
       color: var(--fg-tertiary);
       min-height: 1.2em;
-      margin-top: var(--sp-4);  /* 입력창-힌트 간격 좁힘 (8→4) */
+      margin-top: var(--sp-4);
+      padding-left: 2px;         /* 디자인 spec */
     }
     .field.is-error .field__input { border-color: var(--border-error); }
     .field.is-error .field__helper { color: var(--fg-error); }
@@ -533,28 +546,128 @@
       padding: var(--sp-16) var(--sp-24) var(--sp-40);
     }
     .prizes__head {
-      text-align: center;
+      text-align: left;
       padding: var(--sp-16) 0 var(--sp-32);
     }
+    /* Page 2~6 공통 title/subtitle 스타일 (fig 디자인 통일) */
     .prizes__title {
+      font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
       font-size: 26px;
-      font-weight: 900;
+      font-weight: 700;
       color: var(--fg-base);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
       margin: 0 0 var(--sp-12);
       line-height: 1.3;
     }
     .prizes__desc {
-      font-size: 14px;
+      font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+      font-size: 16px;
+      font-weight: 400;
       color: var(--fg-tertiary);
       margin: 0;
-      line-height: 1.6;
+      line-height: 1.5;
       letter-spacing: -0.01em;
     }
     .prizes__grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: var(--sp-16);
+    }
+    /* 하단 대기 안내 */
+    .prizes__waiting {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-8);
+      margin-top: var(--sp-32);
+      padding: var(--sp-16) var(--sp-20);
+      background: var(--surface-tile);
+      border-radius: var(--r-md);
+      font-size: 13px;
+      color: var(--fg-tertiary);
+      font-weight: 500;
+    }
+    .prizes__waiting-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--clover-green);
+      animation: pulseDot 1.4s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50%      { transform: scale(1.3); opacity: 1; }
+    }
+
+    /* ============================================================
+       Loading 5 — "N초 뒤 추첨 실행" dialog overlay
+       Loading 1-4 완료 후 자동 노출. 60초 countdown 후 게임 시작
+       ============================================================ */
+    .countdown-page {
+      overflow: hidden;
+      position: relative;
+    }
+    .cd-dialog-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(28, 28, 30, 0.4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 10;
+      animation: cdFadeIn 0.3s var(--ease-dec);
+    }
+    @keyframes cdFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .cd-dialog {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 11;
+      width: calc(100% - 48px);
+      max-width: 300px;
+      padding: var(--sp-28) var(--sp-24) var(--sp-24);
+      background: var(--surface-base);
+      border-radius: var(--r-2xl);
+      box-shadow: 0 24px 48px -12px rgba(28, 28, 30, 0.3);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-16);
+      animation: cdDialogIn 0.5s var(--ease-dec);
+    }
+    @keyframes cdDialogIn {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+      to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    .cd-dialog__spinner {
+      width: 64px; height: 64px;
+      animation: cdSpin 2s linear infinite;
+      filter: drop-shadow(0 6px 12px rgba(6, 181, 117, 0.3));
+    }
+    @keyframes cdSpin {
+      0%   { transform: rotate(0) scale(1); }
+      50%  { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    .cd-dialog__title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--fg-base);
+      margin: 0;
+      letter-spacing: -0.015em;
+    }
+    .cd-dialog__title strong {
+      color: var(--clover-green);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      font-size: 20px;
+    }
+    .cd-dialog__sub {
+      font-size: 13px;
+      color: var(--fg-tertiary);
+      margin: 0;
     }
     .prize-card {
       display: flex;
@@ -579,30 +692,48 @@
       overflow: hidden;
       position: relative;
     }
+    /* 상품 이미지 사이즈 — fig 디자인 기준 80 x 80 (2위는 72 x 72 예외) */
     .prize-card__img {
-      width: 72%;
-      height: 72%;
+      width: 80px;
+      height: 80px;
       object-fit: contain;
       transition: transform var(--dur-md) var(--ease-dec);
       filter: drop-shadow(0 6px 10px rgba(28, 28, 30, 0.08));
     }
-    .prize-card__svg {
-      width: 88%;
-      height: 72%;
-      transition: transform var(--dur-md) var(--ease-dec);
+    .prize-card--rank2 .prize-card__img {
+      width: 72px;
+      height: 72px;
     }
     .prize-card:hover .prize-card__img { transform: scale(1.06) rotate(-3deg); }
-    .prize-card:hover .prize-card__svg { transform: scale(1.04); }
-    .prize-card__ill { width: 70%; height: 70%; }
+    .prize-card__ill { width: 80px; height: 80px; }
+
+    /* 배지 — fig 디자인: 흰 bg + 라이트 border + 순위·카테고리 결합 */
     .prize-card__badge {
       align-self: center;
-      padding: 6px 14px;
-      background: var(--surface-pill);
-      color: var(--fg-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      background: var(--surface-base);
+      border: 1px solid var(--border-input);
       border-radius: var(--r-pill);
-      font-size: 12.5px;
+      font-size: 11.5px;
       font-weight: 700;
-      margin-bottom: var(--sp-12);
+      letter-spacing: -0.01em;
+      margin-bottom: var(--sp-10);
+      line-height: 1;
+      box-shadow: 0 1px 2px rgba(28, 28, 30, 0.04);
+    }
+    .prize-card__badge-rank {
+      color: var(--clover-green);
+      font-weight: 800;
+    }
+    .prize-card__badge-sep {
+      color: var(--fg-quinary);
+      font-weight: 400;
+    }
+    .prize-card__badge-cat {
+      color: var(--fg-secondary);
     }
     .prize-card__name {
       font-size: 13px;
@@ -623,6 +754,41 @@
       bottom: 0; left: 0; right: 0;
       padding: var(--sp-20) var(--sp-20) calc(var(--sp-20) + env(safe-area-inset-bottom));
       z-index: 5;
+    }
+
+    /* 홀드 화면 — 하단 대기 안내 (Page 3-2와 동일 디자인) */
+    .hold-waiting {
+      position: relative;
+      z-index: 5;
+      padding: var(--sp-16) 20px calc(var(--sp-20) + env(safe-area-inset-bottom));
+    }
+    .hold-waiting .prizes__waiting {
+      margin-top: 0;
+    }
+
+    /* 홀드 화면 — title / subtitle */
+    .hold-head {
+      position: relative;
+      z-index: 5;
+      padding: var(--sp-16) 20px var(--sp-20);
+      text-align: left;
+    }
+    .hold-head__title {
+      font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+      font-size: 26px;        /* 디자인 spec */
+      font-weight: 700;
+      color: var(--fg-base);
+      letter-spacing: -0.025em;
+      margin: 0 0 var(--sp-12);
+      line-height: 1.3;
+    }
+    .hold-head__sub {
+      font-size: 16px;        /* 디자인 spec */
+      font-weight: 400;
+      color: var(--fg-tertiary);
+      margin: 0;
+      letter-spacing: -0.01em;
+      line-height: 1.5;
     }
 
     /* 홀드 화면: 버블 위에 클로버 (클릭 가능) */
@@ -794,15 +960,19 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    /* faller 그래픽 — seat 이미지, 빙글빙글 회전 애니메이션 */
     .faller__clover {
-      width: 44px; height: 44px;
-      filter: drop-shadow(0 3px 6px rgba(6, 181, 117, 0.3));
-      animation: cloverWobble 0.9s ease-in-out infinite;
+      width: 48px; height: 48px;
+      filter: drop-shadow(0 4px 8px rgba(28, 28, 30, 0.18));
     }
-    .faller__clover img { width: 100%; height: 100%; }
-    @keyframes cloverWobble {
-      0%, 100% { transform: rotate(-6deg); }
-      50%      { transform: rotate(6deg); }
+    .faller__clover img {
+      width: 100%; height: 100%;
+      animation: seatSpin 2.4s linear infinite;
+      display: block;
+    }
+    @keyframes seatSpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
     }
     .faller.is-caught { animation: fallerCaught 0.6s var(--ease-dec) forwards; }
     @keyframes fallerCaught {
@@ -853,123 +1023,134 @@
       100% { opacity: 0; transform: translateX(-50%) translateY(-36px) scale(0.7); }
     }
 
-    /* 당첨 발표 overlay */
-    .announce {
+    /* ============================================================
+       Grade Dialog — 1건 추첨 완료 시 노출
+       관리자가 '다음 순위 추첨' 신호를 보낼 때까지 유지
+       ============================================================ */
+    .grade {
       position: absolute;
       inset: 0;
       display: none;
       align-items: center;
       justify-content: center;
-      background: rgba(28, 28, 30, 0.55);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background: rgba(28, 28, 30, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       z-index: 20;
       padding: var(--sp-24);
     }
-    .announce.is-visible {
+    .grade.is-visible {
       display: flex;
-      animation: announceIn 0.5s var(--ease-dec);
+      animation: gradeIn 0.4s var(--ease-dec);
     }
-    @keyframes announceIn {
+    @keyframes gradeIn {
       from { opacity: 0; }
       to   { opacity: 1; }
     }
-    .announce__card {
+    /* Reward Dialog — 깔끔한 플랫 디자인 (gradient 금지)
+       - prize 이미지 상단
+       - 순위 뱃지 (solid 색상, gradient 없음)
+       - 이름 · 정보 · 상품명
+       - 하단 countdown: loading dialog와 동일한 clover spinner + 텍스트 */
+    .grade__card {
+      position: relative;
       width: 100%;
-      max-width: 340px;
+      max-width: 320px;
       background: var(--surface-base);
       border-radius: var(--r-2xl);
-      padding: var(--sp-32) var(--sp-24) var(--sp-28);
+      padding: var(--sp-24) var(--sp-20) var(--sp-20);
       text-align: center;
-      box-shadow: var(--shadow-lg);
-      animation: announceCard 0.6s var(--ease-dec);
+      box-shadow: 0 24px 48px -16px rgba(28, 28, 30, 0.3);
+      animation: gradeCardIn 0.6s var(--ease-dec);
+      overflow: hidden;
     }
-    @keyframes announceCard {
-      from { opacity: 0; transform: translateY(16px) scale(0.95); }
+    @keyframes gradeCardIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.94); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
-    .announce__clover {
-      width: 76px; height: 76px;
+    .grade__prize-img {
+      width: 120px; height: 120px;
       margin: 0 auto var(--sp-16);
-      position: relative;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 20px rgba(28, 28, 30, 0.12));
+      animation: prizePop 0.8s var(--ease-dec);
     }
-    .announce__clover::before {
-      content: '';
-      position: absolute;
-      inset: -16px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(136, 123, 255, 0.4) 0%, rgba(90, 170, 255, 0.2) 40%, transparent 70%);
-      animation: cubeHalo 2.4s var(--ease-steady) infinite;
-      z-index: 0;
+    @keyframes prizePop {
+      0%   { opacity: 0; transform: scale(0.6) rotate(-10deg); }
+      50%  { opacity: 1; transform: scale(1.1) rotate(5deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0); }
     }
-    .announce__clover img {
-      width: 100%; height: 100%;
-      position: relative;
-      z-index: 1;
-      filter: drop-shadow(0 10px 18px rgba(90, 170, 255, 0.35));
-    }
-    @keyframes cubeHalo {
-      0%, 100% { transform: scale(0.9); opacity: 0.5; }
-      50%      { transform: scale(1.1); opacity: 1; }
-    }
-    .announce__rank-badge {
-      display: inline-block;
+    .grade__badge {
+      display: inline-flex;
+      align-items: center;
       padding: 6px 14px;
-      background: var(--fg-base);
-      color: var(--surface-base);
+      background: var(--clover-green);
+      color: #FFFFFF;
       border-radius: var(--r-pill);
-      font-size: 12.5px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
       margin-bottom: var(--sp-12);
-      letter-spacing: 0.02em;
     }
-    .announce__title {
-      font-family: var(--font-hand);
-      font-size: 20px;
-      color: var(--fg-tertiary);
-      margin: 0 0 var(--sp-4);
-      letter-spacing: 0.02em;
-    }
-    .announce__name {
-      font-size: 30px;
-      font-weight: 900;
+    .grade__name {
+      font-size: 24px;
+      font-weight: 800;
       color: var(--fg-base);
-      margin: 0 0 var(--sp-16);
+      margin: 0 0 var(--sp-4);
       letter-spacing: -0.02em;
-      line-height: 1.2;
+      line-height: 1.25;
     }
-    .announce__prize {
-      padding: var(--sp-12) var(--sp-16);
+    .grade__meta {
+      font-size: 13px;
+      color: var(--fg-tertiary);
+      margin: 0 0 var(--sp-16);
+    }
+    .grade__prize-box {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 12px 16px;
       background: var(--surface-tile);
       border-radius: var(--r-md);
       margin: 0 0 var(--sp-16);
     }
-    .announce__prize-label {
-      font-size: 11px;
+    .grade__prize-label {
+      font-size: 10.5px;
       font-weight: 700;
-      color: var(--fg-tertiary);
+      color: var(--clover-green);
       letter-spacing: 0.08em;
-      margin: 0 0 2px;
       text-transform: uppercase;
     }
-    .announce__prize-name {
-      font-size: 15px;
+    .grade__prize-name {
+      font-size: 14.5px;
       font-weight: 700;
       color: var(--fg-base);
-      margin: 0;
       letter-spacing: -0.01em;
     }
-    .announce__meta {
-      font-size: 13px;
-      color: var(--fg-tertiary);
-      margin: 0;
+    /* 하단 countdown — loading dialog와 동일한 clover spinner + 텍스트 */
+    .grade__countdown-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-8);
+      padding: var(--sp-12) 0 0;
+      border-top: 1px dashed var(--border-input);
+      padding-top: var(--sp-12);
     }
-    .announce__count {
-      display: block;
-      margin-top: var(--sp-16);
-      font-size: 12px;
+    .grade__countdown-spinner {
+      width: 20px; height: 20px;
+      animation: cdSpin 1.8s linear infinite;
+      flex-shrink: 0;
+    }
+    .grade__countdown {
+      font-size: 12.5px;
       color: var(--fg-quinary);
+      margin: 0;
       font-variant-numeric: tabular-nums;
+    }
+    .grade__countdown strong {
+      color: var(--clover-green);
+      font-weight: 800;
     }
 
     /* ============================================================
@@ -978,63 +1159,45 @@
     .result-page {
       background: var(--surface-base);
     }
-    .result-page__scene {
-      position: relative;
-      height: 240px;
-      overflow: hidden;
-      flex: 0 0 auto;
-    }
-    .result-page__scene .scene__sky {
-      background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 60%);
-    }
-    .result-page__scene .scene__ground {
-      height: 50%;
-      border-top-left-radius: 50% 40px;
-      border-top-right-radius: 50% 40px;
-    }
-    .result-page__bukki {
-      position: absolute;
-      bottom: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 150px;
-      z-index: 3;
-      filter: drop-shadow(0 10px 14px rgba(28, 28, 30, 0.1));
-    }
     .result-page__badge {
-      position: absolute;
-      top: 20%;
-      left: 50%;
-      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
       padding: 6px 14px;
-      background: var(--fg-base);
-      color: var(--surface-base);
+      background: var(--clover-green);
+      color: #FFFFFF;
       border-radius: var(--r-pill);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.04em;
-      z-index: 4;
+      margin-bottom: var(--sp-16);
+      box-shadow: 0 4px 10px rgba(6, 181, 117, 0.25);
     }
     .result-page__body {
       flex: 1;
-      padding: var(--sp-28) var(--sp-24) var(--sp-24);
+      padding: var(--sp-40) var(--sp-24) var(--sp-32);
     }
     .result-page__head {
       text-align: center;
-      padding-bottom: var(--sp-24);
+      padding: var(--sp-20) 0 var(--sp-28);
     }
+    /* Page 2~6 공통 title/subtitle 스타일 */
     .result-page__title {
+      font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
       font-size: 26px;
-      font-weight: 900;
+      font-weight: 700;
       color: var(--fg-base);
-      letter-spacing: -0.02em;
-      margin: 0 0 var(--sp-8);
+      letter-spacing: -0.025em;
+      margin: 0 0 var(--sp-12);
       line-height: 1.3;
     }
     .result-page__sub {
-      font-size: 14px;
+      font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+      font-size: 16px;
+      font-weight: 400;
       color: var(--fg-tertiary);
       margin: 0;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
     }
     .result-page__notice {
       padding: var(--sp-12) var(--sp-16);
@@ -1440,23 +1603,29 @@
     <!-- ========================================================
          Page 3-1 · Holding (prize list 전 대기 화면)
          ======================================================== -->
-    <section id="page-hold" class="page" aria-labelledby="hold-title">
+    <section id="page-hold" class="page intro-page" aria-labelledby="hold-title">
+      <!-- Page 1처럼 단일 그라데이션 캔버스 + 하단 녹색 땅 -->
+      <div class="scene__ground" aria-hidden="true"></div>
+
       <div class="nav">
         <button type="button" class="nav__back" data-nav="input" aria-label="이전 화면으로">
           <svg aria-hidden="true"><use href="#ic-chevron-left"/></svg>
         </button>
       </div>
 
+      <div class="hold-head">
+        <h2 id="hold-title" class="hold-head__title">곧 추첨이 시작돼요</h2>
+        <p class="hold-head__sub">클로버를 눌러 행운 리스트를 확인해보세요</p>
+      </div>
+
       <div class="scene">
-        <div class="scene__sky" aria-hidden="true"></div>
         <span class="cloud cloud--1" aria-hidden="true"></span>
         <span class="cloud cloud--2" aria-hidden="true"></span>
         <span class="cloud cloud--3" aria-hidden="true"></span>
-        <div class="scene__ground" aria-hidden="true"></div>
 
         <div class="character">
           <div class="hold-bubble-stack">
-            <span id="hold-title" class="bubble">행운 리스트 클릭</span>
+            <span class="bubble">행운 리스트 클릭</span>
             <button type="button" class="hold-clover" data-nav="prizes" aria-label="행운 리스트 열기">
               <img src="./resource/img_colored_clover.svg" alt="" aria-hidden="true" />
             </button>
@@ -1468,6 +1637,14 @@
             decoding="async" loading="lazy"
             alt=""
           />
+        </div>
+      </div>
+
+      <!-- Page 3-2와 동일한 대기 안내 -->
+      <div class="hold-waiting">
+        <div class="prizes__waiting">
+          <span class="prizes__waiting-dot" aria-hidden="true"></span>
+          <span>관리자가 게임을 시작할 때까지 기다려주세요</span>
         </div>
       </div>
     </section>
@@ -1495,39 +1672,63 @@
           <!-- 동적 생성 -->
         </div>
 
-        <div style="margin-top: var(--sp-32)">
-          <button type="button" class="btn btn--primary btn--full" data-nav="loading">
-            추첨 시작하기
-          </button>
+        <!-- Page 3-2 → Page 4 자동 진입 없음.
+             관리자의 "게임 시작" 신호를 받으면 자동으로 countdown 화면으로 전환됨 -->
+        <div class="prizes__waiting" id="prizes-waiting">
+          <span class="prizes__waiting-dot" aria-hidden="true"></span>
+          <span>관리자가 게임을 시작할 때까지 기다려주세요</span>
         </div>
       </div>
     </section>
 
     <!-- ========================================================
-         Page 4-1 ~ 4-4 · Loading sequence
-         (한 섹션으로 통합 — 버블 문구/도트 진행 상태만 교체)
+         Page 3.5 · Countdown (관리자 '게임 시작' 신호 후 60초 대기)
          ======================================================== -->
-    <section id="page-loading" class="page" aria-labelledby="load-bubble" aria-busy="true">
-      <div class="nav">
-        <button type="button" class="nav__back" data-nav="prizes" aria-label="이전 화면으로">
-          <svg aria-hidden="true"><use href="#ic-chevron-left"/></svg>
-        </button>
-      </div>
+    <!-- Loading 5 — Loading 1-4 완료 후 1분 countdown dialog 노출 -->
+    <section id="page-countdown" class="page intro-page countdown-page" aria-labelledby="cd-title" aria-busy="true">
+      <!-- Scene (sky + ground) is background -->
+      <div class="scene__ground" aria-hidden="true"></div>
+      <div class="nav" aria-hidden="true"></div>
 
       <div class="scene">
-        <div class="scene__sky" aria-hidden="true"></div>
+        <span class="cloud cloud--1" aria-hidden="true"></span>
+        <span class="cloud cloud--2" aria-hidden="true"></span>
+        <span class="cloud cloud--3" aria-hidden="true"></span>
+        <div class="character">
+          <img class="character__img" src="./resource/bukki_walking.png" alt="" />
+        </div>
+      </div>
+
+      <!-- Centered Loading 5 dialog -->
+      <div class="cd-dialog-backdrop" aria-hidden="true"></div>
+      <div class="cd-dialog" role="status" aria-live="polite">
+        <img class="cd-dialog__spinner" src="./resource/img_colored_clover.svg" alt="" aria-hidden="true" />
+        <p id="cd-title" class="cd-dialog__title">
+          <strong><span id="cd-remain">60</span>초</strong> 뒤 추첨 실행
+        </p>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         Page 4-1 ~ 4-4 · Loading sequence
+         - 상단 뒤로가기 제거, Page 1처럼 unified bg
+         ======================================================== -->
+    <section id="page-loading" class="page intro-page" aria-labelledby="load-bubble" aria-busy="true">
+      <!-- 녹색 땅 (unified bg) -->
+      <div class="scene__ground" aria-hidden="true"></div>
+
+      <!-- 뒤로가기 없음 — 빈 nav 공간만 유지 -->
+      <div class="nav" aria-hidden="true"></div>
+
+      <div class="scene">
         <span class="cloud cloud--1" aria-hidden="true"></span>
         <span class="cloud cloud--2" aria-hidden="true"></span>
         <span class="cloud cloud--3" aria-hidden="true"></span>
         <span class="cloud cloud--4" aria-hidden="true"></span>
-        <div class="scene__ground" aria-hidden="true"></div>
 
         <div class="character">
           <div class="hold-bubble-stack">
             <span id="load-bubble" class="bubble">올 한해도 고생하셨습니다!</span>
-            <span class="load-clover" aria-hidden="true" id="load-clover">
-              <img src="./resource/img_colored_clover.svg" alt="" />
-            </span>
           </div>
           <img
             class="character__img"
@@ -1554,28 +1755,29 @@
         <div class="scene__ground" aria-hidden="true"></div>
 
         <!-- 안내: 최초 몇 초만 표시, 등수 노출 없음 -->
-        <div id="game-hint" class="game-stage__hint">클로버가 쏟아져요!</div>
+        <div id="game-hint" class="game-stage__hint">Lucky Seat가 쏟아져요!</div>
 
         <!-- 거북이 플레이어 -->
         <div class="bukki-player is-walking" id="bukki">
           <img src="./resource/bukki_walking.png" alt="" />
         </div>
 
-        <!-- 당첨자 발표 overlay -->
-        <div class="announce" id="announce" role="status" aria-live="polite">
-          <div class="announce__card">
-            <div class="announce__clover cube-float">
-              <img src="./resource/icon_sparkle_cube.png" alt="" />
+        <!-- Grade Dialog: 라운드 catch 완료 시 노출. 관리자 신호까지 대기 -->
+        <div class="grade" id="grade-dialog" role="dialog" aria-modal="true" aria-labelledby="gd-rank">
+          <div class="grade__card">
+            <img class="grade__prize-img" id="gd-prize-img" src="" alt="" />
+            <span class="grade__badge" id="gd-rank">7위 당첨</span>
+            <p class="grade__name" id="gd-name">—</p>
+            <p class="grade__meta" id="gd-meta">—</p>
+            <div class="grade__prize-box">
+              <span class="grade__prize-label" id="gd-prize-label">PRIZE</span>
+              <span class="grade__prize-name" id="gd-prize-name">—</span>
             </div>
-            <span class="announce__rank-badge" id="an-rank-badge">7위 당첨</span>
-            <p class="announce__title" id="an-title">Lucky Seat</p>
-            <p class="announce__name" id="an-name">—</p>
-            <div class="announce__prize">
-              <p class="announce__prize-label">PRIZE</p>
-              <p class="announce__prize-name" id="an-prize">—</p>
+            <!-- Loading dialog 스타일 countdown (clover spinner + text) -->
+            <div class="grade__countdown-wrap" id="gd-countdown-wrap">
+              <img class="grade__countdown-spinner" src="./resource/img_colored_clover.svg" alt="" aria-hidden="true" />
+              <p class="grade__countdown" id="gd-countdown">관리자 추첨 대기 중…</p>
             </div>
-            <p class="announce__meta" id="an-meta">—</p>
-            <span class="announce__count" id="an-count">10초 뒤 다음 추첨…</span>
           </div>
         </div>
       </div>
@@ -1585,28 +1787,18 @@
          Page 6 · Result
          ======================================================== -->
     <section id="page-result" class="page result-page" aria-labelledby="result-title">
-      <div class="result-page__scene">
-        <div class="scene__sky" aria-hidden="true"></div>
-        <span class="cloud cloud--1" aria-hidden="true"></span>
-        <span class="cloud cloud--2" aria-hidden="true"></span>
-        <div class="scene__ground" aria-hidden="true"></div>
-        <span class="result-page__badge">Lucky Seat 추첨 완료</span>
-        <img class="result-page__bukki" src="./resource/bukki_walking.png" alt="" />
-      </div>
-
+      <!-- 뒤로 돌아갈 수 없음 — back 진입점 없음, 상단 scene 제거 -->
       <div class="result-page__body">
         <div class="result-page__head">
+          <span class="result-page__badge">Lucky Seat 추첨 완료</span>
           <h2 id="result-title" class="result-page__title">축하합니다!</h2>
           <p class="result-page__sub">오늘의 Lucky Seat 당첨자를 소개합니다</p>
         </div>
 
         <div id="result-notice" class="result-page__notice" role="status"></div>
 
-        <div id="winners" class="winners" aria-label="당첨자 목록 (7위 → 1위)"></div>
-
-        <div class="result-page__cta">
-          <button type="button" class="btn btn--secondary" data-nav="intro">처음으로</button>
-        </div>
+        <!-- 1위부터 순차 노출 (디자인 spec) -->
+        <div id="winners" class="winners" aria-label="당첨자 목록 (1위 → 7위)"></div>
       </div>
     </section>
   </main>
@@ -1629,8 +1821,10 @@
        Storage — admin.html과 호환
        ============================================================ */
     const KEYS = {
-      users:   'gobuk_lucky_draw_users',
-      winners: 'gobuk_lucky_draw_winners',
+      users:    'gobuk_lucky_draw_users',
+      winners:  'gobuk_lucky_draw_winners',
+      signal:   'gobuk_game_signal',   /* admin → user cross-tab signal */
+      state:    'gobuk_game_state',    /* user → admin: current phase */
     };
     const store = {
       getUsers() {
@@ -1644,6 +1838,18 @@
           drawnAt: new Date().toISOString(), winners: ws,
         }));
       },
+      writeState(partial) {
+        const prev = (() => {
+          try { return JSON.parse(localStorage.getItem(KEYS.state) || '{}'); }
+          catch { return {}; }
+        })();
+        const next = { ...prev, ...partial, updatedAt: Date.now() };
+        localStorage.setItem(KEYS.state, JSON.stringify(next));
+      },
+      readSignal() {
+        try { return JSON.parse(localStorage.getItem(KEYS.signal) || 'null'); }
+        catch { return null; }
+      },
     };
 
     /* ============================================================
@@ -1652,46 +1858,47 @@
        - 7위 → 1위에 어떤 상품이 매칭되는지 배열로 명시
        ============================================================ */
     // 디자인 파일 기준 리소스 매핑
-    // - AirPods: 실제 제품 이미지 (fig 추출)
-    // - 캠프파이어 일러스트: 내부 SVG 심볼 (#ill-campfire)
-    //   → 디자인 Page 3-2에서 4개 카드가 동일하게 반복되는 스노우맨+모닥불+소나무 scene
-    const IMG_AIRPODS  = './resource/icon_airpods.png';
-    const SVG_CAMPFIRE = '#ill-campfire';
+    // fig에서 추출한 실제 상품 이미지
+    const IMG_AIRPODS  = './resource/prize_airpods.png';
+    const IMG_MASSAGER = './resource/prize_massager.png';
+    const IMG_MOUSE    = './resource/prize_mouse.png';
+    const IMG_PRESENT  = './resource/present.svg';
+    const IMG_EYEMASK  = './resource/prize_eyemask.png';
 
     const PRIZES = [
-      // 1~7위 → 2위~7위는 모두 캠프파이어 scene 표시 (디자인 그대로)
       { rank: 1, category: '귀의 쉼',   name: 'AirPods 5',             count: 1, img: IMG_AIRPODS  },
-      { rank: 2, category: '몸의 쉼',   name: 'Philips 미니 마사지건', count: 1, svg: SVG_CAMPFIRE },
-      { rank: 3, category: '손목의 쉼', name: 'Logitech 버티컬 마우스', count: 1, svg: SVG_CAMPFIRE },
-      { rank: 4, category: '달콤한 쉼', name: '비싼 초콜렛',           count: 1, svg: SVG_CAMPFIRE },
+      { rank: 2, category: '몸의 쉼',   name: 'Philips 미니 마사지건', count: 1, img: IMG_MASSAGER },
+      { rank: 3, category: '손목의 쉼', name: 'Logitech 버티컬 마우스', count: 1, img: IMG_MOUSE   },
+      { rank: 4, category: '달콤한 쉼', name: '랜덤 디저트',           count: 1, img: IMG_PRESENT },
       // 5~7위 — 메구리즘 아이마스크 3명
-      { rank: 5, category: '눈의 쉼',   name: '메구리즘 아이마스크',   count: 1, svg: SVG_CAMPFIRE },
-      { rank: 6, category: '눈의 쉼',   name: '메구리즘 아이마스크',   count: 1, svg: SVG_CAMPFIRE },
-      { rank: 7, category: '눈의 쉼',   name: '메구리즘 아이마스크',   count: 1, svg: SVG_CAMPFIRE },
+      { rank: 5, category: '눈의 쉼',   name: '메구리즘 아이마스크',   count: 1, img: IMG_EYEMASK },
+      { rank: 6, category: '눈의 쉼',   name: '메구리즘 아이마스크',   count: 1, img: IMG_EYEMASK },
+      { rank: 7, category: '눈의 쉼',   name: '메구리즘 아이마스크',   count: 1, img: IMG_EYEMASK },
     ];
     function getPrizeByRank(rank) { return PRIZES.find((p) => p.rank === rank); }
 
     // Page 3-2 그리드용 집계 (같은 상품은 묶어서 노출)
     const PRIZES_DISPLAY = [
-      { category: '귀의 쉼',   name: 'AirPods 5',              count: 1, img: IMG_AIRPODS  },
-      { category: '몸의 쉼',   name: 'Philips 미니 마사지건',   count: 1, svg: SVG_CAMPFIRE },
-      { category: '손목의 쉼', name: 'Logitech 버티컬 마우스',  count: 1, svg: SVG_CAMPFIRE },
-      { category: '달콤한 쉼', name: '비싼 초콜렛',             count: 1, svg: SVG_CAMPFIRE },
-      { category: '눈의 쉼',   name: '메구리즘 아이마스크',     count: 3, svg: SVG_CAMPFIRE },
+      { rank: '1위', category: '귀의 쉼',   name: 'AirPods 5',              count: 1, img: IMG_AIRPODS  },
+      { rank: '2위', category: '몸의 쉼',   name: 'Philips 미니 마사지건',   count: 1, img: IMG_MASSAGER },
+      { rank: '3위', category: '손목의 쉼', name: 'Logitech 버티컬 마우스',  count: 1, img: IMG_MOUSE   },
+      { rank: '4위', category: '달콤한 쉼', name: '랜덤 디저트',             count: 1, img: IMG_PRESENT },
+      { rank: '5~7위', category: '눈의 쉼', name: '메구리즘 아이마스크',     count: 3, img: IMG_EYEMASK },
     ];
 
     /* ============================================================
        Navigation
        ============================================================ */
-    const PAGES = ['page-intro', 'page-input', 'page-hold', 'page-prizes', 'page-loading', 'page-game', 'page-result'];
+    const PAGES = ['page-intro', 'page-input', 'page-hold', 'page-prizes', 'page-countdown', 'page-loading', 'page-game', 'page-result'];
     const NAV = {
-      intro:   'page-intro',
-      input:   'page-input',
-      hold:    'page-hold',
-      prizes:  'page-prizes',
-      loading: 'page-loading',
-      game:    'page-game',
-      result:  'page-result',
+      intro:     'page-intro',
+      input:     'page-input',
+      hold:      'page-hold',
+      prizes:    'page-prizes',
+      countdown: 'page-countdown',
+      loading:   'page-loading',
+      game:      'page-game',
+      result:    'page-result',
     };
     function go(id) {
       PAGES.forEach((p) => {
@@ -1699,17 +1906,115 @@
         if (el) el.classList.toggle('is-active', p === id);
       });
       window.scrollTo({ top: 0, behavior: 'instant' });
+      // 관리자가 참조할 phase 상태 기록
+      const phaseMap = {
+        'page-intro':'intro', 'page-input':'input', 'page-hold':'hold',
+        'page-prizes':'waiting_start', 'page-countdown':'countdown_start',
+        'page-loading':'loading', 'page-game':'drawing', 'page-result':'done',
+      };
+      if (phaseMap[id]) store.writeState({ phase: phaseMap[id] });
     }
     document.querySelectorAll('[data-nav]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const key = btn.getAttribute('data-nav');
-        // 로딩 시퀀스 중 다른 페이지로 이탈 시 타이머 정리
         if (key !== 'loading' && loadTimer) { clearInterval(loadTimer); loadTimer = null; }
         if (key === 'loading') startLoadingSequence();
         else if (key === 'intro') resetForm();
         if (NAV[key]) go(NAV[key]);
       });
     });
+
+    /* ============================================================
+       Admin → User cross-tab signal 수신
+       ============================================================ */
+    window.addEventListener('storage', (e) => {
+      if (e.key !== KEYS.signal || !e.newValue) return;
+      let sig; try { sig = JSON.parse(e.newValue); } catch { return; }
+      handleAdminSignal(sig);
+    });
+
+    function handleAdminSignal(sig) {
+      if (!sig || !sig.action) return;
+      switch (sig.action) {
+        case 'start': {
+          // 참여 완료한 사용자만 반응 (hold / prizes 상태)
+          const activeId = document.querySelector('.page.is-active')?.id;
+          if (['page-hold', 'page-prizes'].includes(activeId)) {
+            // Loading 1-4 바로 실행 → 완료 시 Loading 5 (countdown)
+            startLoadingSequence();
+            go('page-loading');
+          }
+          break;
+        }
+        case 'next': {
+          // Grade dialog 열려 있으면 next round 진행
+          if (document.getElementById('grade-dialog')?.classList.contains('is-visible')) {
+            dialogResolve && dialogResolve();
+          }
+          break;
+        }
+        case 'reveal': {
+          // 1위 발표 완료 후 결과 페이지로
+          if (document.getElementById('grade-dialog')?.classList.contains('is-visible')) {
+            revealResolve && revealResolve();
+          }
+          break;
+        }
+        case 'reset': {
+          resetForm();
+          // 추첨 결과도 초기화하되 participants는 유지하여 다시 바로 게임 실행 가능
+          localStorage.removeItem(KEYS.winners);
+          localStorage.removeItem(KEYS.state);
+          go('page-intro');
+          break;
+        }
+      }
+    }
+
+    /* ============================================================
+       Loading 5 — 로딩 1-4 완료 후 "N초 뒤 추첨 실행" 1분 countdown
+       ============================================================ */
+    let countdownTimer = null;
+    function startLoading5Countdown() {
+      if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+      go('page-countdown');
+      let remain = 60;
+      const el = document.getElementById('cd-remain');
+      if (el) el.textContent = remain;
+      store.writeState({ phase: 'countdown_start', countdownRemain: remain });
+      countdownTimer = setInterval(() => {
+        remain--;
+        if (el) el.textContent = Math.max(0, remain);
+        store.writeState({ phase: 'countdown_start', countdownRemain: Math.max(0, remain) });
+        if (remain <= 0) {
+          clearInterval(countdownTimer);
+          countdownTimer = null;
+          startGameFlow();
+        }
+      }, 1000);
+    }
+
+    /* 라운드 간 10초 countdown (관리자 '다음 순위 추첨' 후) */
+    function startInterRoundCountdown() {
+      return new Promise((resolve) => {
+        store.writeState({ phase: 'inter_countdown' });
+        const dialogCountEl = document.getElementById('gd-countdown');
+        let remain = 10;
+        if (dialogCountEl) {
+          dialogCountEl.innerHTML = `<strong>${remain}초</strong> 뒤 다음 추첨 시작`;
+        }
+        const t = setInterval(() => {
+          remain--;
+          if (dialogCountEl) {
+            dialogCountEl.innerHTML = `<strong>${Math.max(0, remain)}초</strong> 뒤 다음 추첨 시작`;
+          }
+          if (remain <= 0) {
+            clearInterval(t);
+            resolve();
+          }
+        }, 1000);
+      });
+    }
 
     /* ============================================================
        Toast / Veil
@@ -1733,14 +2038,20 @@
        ============================================================ */
     function renderPrizeGrid() {
       const grid = document.getElementById('prize-grid');
-      grid.innerHTML = PRIZES_DISPLAY.map((p) => {
+      grid.innerHTML = PRIZES_DISPLAY.map((p, i) => {
         const visual = p.img
           ? `<img class="prize-card__img" src="${p.img}" alt="" loading="lazy" />`
           : `<svg class="prize-card__svg" viewBox="0 0 160 120" aria-hidden="true"><use href="${p.svg}"/></svg>`;
+        // 2위 (index 1) 전용 클래스 → 72x72 이미지 사이즈
+        const extraClass = i === 1 ? ' prize-card--rank2' : '';
         return `
-          <article class="prize-card">
+          <article class="prize-card${extraClass}">
             <div class="prize-card__image" aria-hidden="true">${visual}</div>
-            <span class="prize-card__badge">${esc(p.category)}</span>
+            <span class="prize-card__badge">
+              <span class="prize-card__badge-rank">${esc(p.rank || '')}</span>
+              <span class="prize-card__badge-sep">·</span>
+              <span class="prize-card__badge-cat">${esc(p.category)}</span>
+            </span>
             <p class="prize-card__name">${esc(p.name)} · ${p.count}명</p>
           </article>
         `;
@@ -1867,7 +2178,7 @@
         store.addUser(user);
         veil(false);
         submitBtn.disabled = false;
-        toast('참여 완료! 행운 리스트로 이동합니다');
+        // toast 제거 (디자인 spec)
         go('page-hold');
       }, 900);
     });
@@ -1901,8 +2212,8 @@
         if (step >= LOAD_MESSAGES.length) {
           clearInterval(loadTimer);
           loadTimer = null;
-          // 게임 준비 → Page 5 이동
-          setTimeout(() => startGameFlow(), 400);
+          // Loading 1-4 완료 → Loading 5 (countdown dialog 60초)
+          setTimeout(() => startLoading5Countdown(), 400);
           return;
         }
         // bubble fade transition
@@ -1945,7 +2256,7 @@
           <div class="faller__meta">${esc(user.team)} · ${esc(user.seat)}</div>
         </div>
         <span class="faller__clover">
-          <img src="./resource/img_colored_clover.svg" alt="" aria-hidden="true" />
+          <img src="./resource/img_colored_seat.svg" alt="" aria-hidden="true" />
         </span>
       `;
       return el;
@@ -1994,36 +2305,51 @@
       return picked;
     }
 
-    /* 당첨 발표 overlay — 지정 시간동안 노출 후 자동 해제 */
-    function showAnnouncement(rank, winner, holdMs) {
-      const prize = getPrizeByRank(rank);
-      document.getElementById('an-rank-badge').textContent = `${rank}위 당첨`;
-      document.getElementById('an-title').textContent = `Lucky Seat · ${rank}위`;
-      document.getElementById('an-name').textContent = winner.name;
-      document.getElementById('an-prize').textContent = prize
-        ? `${prize.category} · ${prize.name}` : '-';
-      document.getElementById('an-meta').textContent = `${winner.team} · ${winner.seat}`;
+    /* Grade Dialog — catch 완료 시 노출
+       - rank > 1: 관리자 'next' 신호 → 10초 countdown → 다음 라운드
+       - rank === 1 (마지막): 관리자 'reveal' 신호만 유효 → 결과 페이지 */
+    const gradeDialogEl = document.getElementById('grade-dialog');
+    let dialogResolve = null;
+    let revealResolve = null;
 
-      const countEl = document.getElementById('an-count');
-      announceEl.classList.add('is-visible');
+    function showGradeDialog(rank, winner) {
+      const prize = getPrizeByRank(rank);
+      const isFinal = rank === 1;
+      document.getElementById('gd-prize-img').src = prize ? prize.img : '';
+      document.getElementById('gd-rank').textContent = `${rank}위 당첨`;
+      document.getElementById('gd-name').textContent = winner.name;
+      document.getElementById('gd-meta').textContent = `${winner.team} · ${winner.seat}`;
+      document.getElementById('gd-prize-label').textContent = prize ? prize.category : 'PRIZE';
+      document.getElementById('gd-prize-name').textContent = prize ? prize.name : '-';
+      document.getElementById('gd-countdown').textContent = isFinal
+        ? '관리자 "결과 발표" 버튼을 눌러주세요'
+        : '관리자 "다음 순위 추첨" 대기 중…';
+
+      // 관리자가 참조할 상태 기록
+      store.writeState({
+        phase: isFinal ? 'dialog_wait_final' : 'dialog_wait',
+        currentRank: rank,
+        currentWinner: { name: winner.name, team: winner.team, seat: winner.seat },
+      });
+
+      gradeDialogEl.classList.add('is-visible');
 
       return new Promise((resolve) => {
-        let remain = Math.round(holdMs / 1000);
-        countEl.textContent = `${remain}초 뒤 다음 추첨…`;
-        const tick = setInterval(() => {
-          remain -= 1;
-          if (remain <= 0) {
-            clearInterval(tick);
-            countEl.textContent = '다음 라운드 준비 중…';
-            return;
-          }
-          countEl.textContent = `${remain}초 뒤 다음 추첨…`;
-        }, 1000);
-        setTimeout(() => {
-          clearInterval(tick);
-          announceEl.classList.remove('is-visible');
-          resolve();
-        }, holdMs);
+        if (isFinal) {
+          // 1위 마지막: reveal 신호 대기 (next 비활성)
+          revealResolve = () => {
+            revealResolve = null;
+            gradeDialogEl.classList.remove('is-visible');
+            resolve();
+          };
+        } else {
+          dialogResolve = async () => {
+            dialogResolve = null;
+            await startInterRoundCountdown();
+            gradeDialogEl.classList.remove('is-visible');
+            resolve();
+          };
+        }
       });
     }
 
@@ -2031,108 +2357,187 @@
        - 당첨자 포함 clover들을 섞어 떨어뜨림
        - 거북이가 당첨자 clover를 catch (catch 시점에 rank 노출)
        - 10초간 당첨자 발표 */
+    /* ============================================================
+       playRound — 전체 참여자가 동시에 등장, 랜덤 속도로 낙하
+       - 당첨자(winner)는 가장 빠르게 떨어지도록 duration 짧게 할당
+       - 다른 참여자는 랜덤한 슬로우/빠른 속도
+       - 가장 빨리 바닥에 도달한 당첨자를 거북이가 catch
+       - 1라운드 최대 30초
+       ============================================================ */
+    /* ============================================================
+       playRound (v3) — 전면 재작성
+       사양:
+       - 모든 참여자 seat가 게임 시작과 동시에 즉시 등장 (상단 보이는 위치)
+       - 당첨자는 가장 먼저 bukki 캐치 지점에 도착 (고정 duration)
+       - 다른 참여자는 bukki보다 늦게 도달 (duration 반드시 더 큼)
+         · 5% fast  (당첨자보다 느리지만 상대적 빠름)
+         · 50% very slow
+         · 45% normal
+       - 1 라운드 최대 30초. 안전장치로 강제 catch
+       ============================================================ */
+    const ROUND_HARD_LIMIT_MS = 30000;
+    const WINNER_FALL_MS      = 12000;             // 당첨자 12초에 catch 지점 도달
+    const WINNER_CATCH_AT_MS  = 10000;             // catch 발동 시각 (12초의 ~83%)
+    const BUKKI_LEAD_MS       = 1500;              // bukki가 catch 전 미리 이동할 시간
+
     function playRound(rank, winner, allUsers) {
       return new Promise((resolve) => {
         clearStage();
         bukkiEl.classList.remove('is-catching');
         bukkiEl.classList.add('is-walking');
+        store.writeState({ phase: 'drawing', currentRank: rank });
 
-        // 당첨자 x 좌표 (중앙 쪽에 치우쳐 catch 자연스럽게)
-        const winnerX = 28 + Math.random() * 44;
+        // ----- 참여자 pool (최대 20명 성능 보호) -----
+        let pool = allUsers.slice(0, 20);
+        if (!pool.find((u) => u.id === winner.id)) pool = [winner, ...pool.slice(0, 19)];
 
-        // distractor pool (현재 당첨자 제외)
-        const distractorPool = allUsers.filter((u) => u.id !== winner.id);
-        const distractorCount = Math.min(3, distractorPool.length);
-        const distractors = pickRandomN(distractorPool, distractorCount);
+        // ----- 좌표 배치 -----
+        const positions = assignPositions(pool.length);
 
-        // items pool + spawn 시간 섞기
-        const items = [{ user: winner, isWinner: true, x: winnerX }];
-        const takenX = [winnerX];
-        distractors.forEach((user) => {
-          let x, tries = 0;
-          do {
-            x = 12 + Math.random() * 76;
-            tries++;
-          } while (tries < 8 && takenX.some((tx) => Math.abs(tx - x) < 22));
-          takenX.push(x);
-          items.push({ user, isWinner: false, x });
-        });
-
-        const slotTimes = items.map((_, i) => 150 + i * 520 + Math.random() * 220);
-        // 셔플 (단, 당첨자가 "맨 마지막 등장"은 피함)
-        function shuffleNoLast(arr) {
-          if (arr.length <= 1) return arr;
-          let safety = 10;
-          do {
-            for (let i = arr.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            safety--;
-          } while (arr[arr.length - 1].isWinner && safety > 0);
-          return arr;
+        // ----- 각 참여자 duration 할당 -----
+        // 당첨자: 12초 (가장 빠름)
+        // 다른 참여자: 반드시 WINNER_CATCH_AT_MS 보다 늦게 도달하도록 함
+        //   · 5% fast → 18~22s
+        //   · 50% very slow → 45~70s (라운드 안에 땅 도달 못함)
+        //   · 45% normal → 28~40s
+        function pickOtherDuration() {
+          const r = Math.random();
+          if (r < 0.05) return 18000 + Math.random() * 4000;    // fast
+          if (r < 0.55) return 45000 + Math.random() * 25000;   // very slow
+          return 28000 + Math.random() * 12000;                 // normal
         }
-        shuffleNoLast(items);
 
-        const fallDuration = 3600;
-        const catchAfterSpawn = 2800;
-        const bukkiLead = 1500;
+        const fallers = pool.map((user, i) => ({
+          user,
+          isWinner: user.id === winner.id,
+          x: positions[i],
+          duration: user.id === winner.id ? WINNER_FALL_MS : pickOtherDuration(),
+        }));
 
-        let winnerSpawnDelay = 0;
-        items.forEach((item, i) => {
-          item.spawnAt = slotTimes[i];
-          if (item.isWinner) winnerSpawnDelay = item.spawnAt;
+        // ----- Spawn 모든 fallers (즉시 보임) -----
+        const activeEls = fallers.map((f) => {
+          const el = createFaller(f.user, f.x);
+          stageEl.appendChild(el);
+          startFall(el, f.duration);
+          return el;
         });
 
-        const absoluteCatchAt = winnerSpawnDelay + catchAfterSpawn;
-        const absoluteBukkiMoveAt = Math.max(0, absoluteCatchAt - bukkiLead);
-
-        // Bukki wandering (catch 전까지 임의 좌우 이동 — "랜덤 catch" 느낌)
+        // ----- Bukki wandering -----
         let wanderTimer = null;
         let wandering = true;
         function wanderStep() {
           if (!wandering) return;
-          const randX = 20 + Math.random() * 60;
-          moveBukkiTo(randX);
-          wanderTimer = setTimeout(wanderStep, 1400 + Math.random() * 400);
+          moveBukkiTo(15 + Math.random() * 70);
+          wanderTimer = setTimeout(wanderStep, 1200 + Math.random() * 500);
         }
         wanderStep();
 
-        // Spawn
-        items.forEach((item) => {
-          setTimeout(() => {
-            const el = createFaller(item.user, item.x);
-            stageEl.appendChild(el);
-            animateFall(el, fallDuration);
-            if (item.isWinner) {
-              el._role = 'winner';
-              // Winner catch 시점
-              setTimeout(async () => {
-                wandering = false;
-                clearTimeout(wanderTimer);
-                moveBukkiTo(item.x);
-                el.classList.add('is-caught');
-                stopFall(el);
-                bukkiEl.classList.remove('is-walking');
-                bukkiEl.classList.add('is-catching');
-                spawnSparkle(item.x);
-                await delay(600);
-                bukkiEl.classList.remove('is-catching');
-                // 발표 overlay (10초)
-                await showAnnouncement(rank, winner, 10000);
-                resolve();
-              }, catchAfterSpawn);
-            }
-          }, item.spawnAt);
-        });
-
-        // Bukki 이동 (catch 지점으로 - lead time)
+        // ----- Bukki pre-move to winner x -----
         setTimeout(() => {
+          const w = fallers.find((f) => f.isWinner);
+          if (w) {
+            wandering = false;
+            clearTimeout(wanderTimer);
+            moveBukkiTo(w.x);
+          }
+        }, Math.max(0, WINNER_CATCH_AT_MS - BUKKI_LEAD_MS));
+
+        // ----- 당첨자 catch at fixed time -----
+        let caught = false;
+        const catchTimer = setTimeout(async () => {
+          if (caught) return;
+          caught = true;
           wandering = false;
           clearTimeout(wanderTimer);
-          moveBukkiTo(winnerX);
-        }, absoluteBukkiMoveAt);
+
+          const w = fallers.find((f) => f.isWinner);
+          const wIdx = fallers.indexOf(w);
+          const winnerEl = activeEls[wIdx];
+          if (w) {
+            moveBukkiTo(w.x);
+            spawnSparkle(w.x);
+          }
+          bukkiEl.classList.remove('is-walking');
+          bukkiEl.classList.add('is-catching');
+          if (winnerEl) winnerEl.classList.add('is-caught');
+          // 모든 fallers 정지
+          activeEls.forEach(stopFall);
+          await delay(700);
+          bukkiEl.classList.remove('is-catching');
+          await showGradeDialog(rank, winner);
+          resolve();
+        }, WINNER_CATCH_AT_MS);
+
+        // ----- 안전장치: 30초 초과 시 강제 종료 -----
+        setTimeout(async () => {
+          if (caught) return;
+          caught = true;
+          clearTimeout(catchTimer);
+          wandering = false;
+          clearTimeout(wanderTimer);
+          activeEls.forEach(stopFall);
+          const w = fallers.find((f) => f.isWinner);
+          if (w) {
+            moveBukkiTo(w.x);
+            spawnSparkle(w.x);
+          }
+          bukkiEl.classList.remove('is-walking');
+          bukkiEl.classList.add('is-catching');
+          await delay(600);
+          bukkiEl.classList.remove('is-catching');
+          await showGradeDialog(rank, winner);
+          resolve();
+        }, ROUND_HARD_LIMIT_MS);
       });
+    }
+
+    /* 좌표 배치 — 겹치지 않게 */
+    function assignPositions(count) {
+      const positions = [];
+      const minGap = Math.max(10, 80 / count);
+      let attempts = 0;
+      while (positions.length < count && attempts < count * 25) {
+        const candidate = 10 + Math.random() * 80;
+        if (!positions.some((p) => Math.abs(p - candidate) < minGap)) {
+          positions.push(candidate);
+        }
+        attempts++;
+      }
+      while (positions.length < count) {
+        positions.push(10 + (positions.length * (80 / count)));
+      }
+      // 셔플
+      for (let i = positions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [positions[i], positions[j]] = [positions[j], positions[i]];
+      }
+      return positions;
+    }
+
+    /* 단순 linear fall — 상단에서 바로 보이게 spawn
+       - 시작 top: -20px (거의 상단 edge, 약간 가려짐)
+       - duration ms 걸려 바닥까지 이동 */
+    function startFall(el, duration) {
+      const stageHeight = stageEl.clientHeight;
+      // 모든 faller 상단에서 즉시 보이게 (약간의 stagger로 자연스러움)
+      const startTop = -20 - Math.random() * 20;    // -20 ~ -40
+      const endTop = stageHeight + 40;
+      const total = endTop - startTop;
+      el.style.top = `${startTop}px`;
+      el._stop = false;
+      const now0 = performance.now();
+      function tick(now) {
+        if (el._stop || !el.isConnected) return;
+        const elapsed = now - now0;
+        const t = Math.min(1, elapsed / duration);
+        el.style.top = `${startTop + total * t}px`;
+        if (t >= 1) {
+          el.remove();
+          return;
+        }
+        el._raf = requestAnimationFrame(tick);
+      }
+      el._raf = requestAnimationFrame(tick);
     }
 
     /* ----- 게임 전체 플로우 ----- */
@@ -2159,7 +2564,7 @@
       hintEl.classList.remove('is-hidden');
       hintEl.textContent = target === 0
         ? '참여자가 없어요…'
-        : '클로버가 쏟아져요!';
+        : 'Lucky Seat가 쏟아져요!';
       await delay(1500);
       hintEl.classList.add('is-hidden');
 
@@ -2204,23 +2609,20 @@
 
       if (!winners || winners.length === 0) return;
 
-      const reversed = [...winners].reverse();
-      const startRank = winners.length;
-      reversed.forEach((w, idx) => {
-        const rank = startRank - idx;
+      // 1위부터 순차 노출 (디자인 spec)
+      // winners[0] = 1위, winners[1] = 2위 … 그 순서로 그대로
+      winners.forEach((w, idx) => {
+        const rank = idx + 1;
         const prize = getPrizeByRank(rank);
         const el = document.createElement('article');
         el.className = `winner winner--${rank}`;
-        el.style.animationDelay = `${idx * 100}ms`;
+        el.style.animationDelay = `${idx * 150}ms`;
         el.innerHTML = `
           <div class="winner__rank" aria-label="${rank}위">${rank}</div>
           <div class="winner__body">
             <h3 class="winner__name">${esc(w.name)} <span style="font-size:12px;font-weight:500;color:var(--fg-tertiary)">· ${esc(w.team)}</span></h3>
             <p class="winner__meta">좌석 ${esc(w.seat)} · ${prize ? esc(prize.category + ' · ' + prize.name) : '-'}</p>
           </div>
-          <span class="winner__clover" aria-hidden="true">
-            <img src="./resource/img_colored_clover.svg" alt="" />
-          </span>
         `;
         container.appendChild(el);
       });
