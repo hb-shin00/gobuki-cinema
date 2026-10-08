@@ -12,7 +12,12 @@ window.ScratchCard = function (slotEl, { onReveal }) {
   slotEl.appendChild(canvas);
   const ctx = canvas.getContext('2d');
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const brush = 34;
+  const opts = (window.LS_CONFIG && window.LS_CONFIG.scratch) || {};
+  const brush = (opts.brushSize || 48) / 2; // 붓 반지름
+  const textReveal = opts.textReveal || 0.8;
+  const areaReveal = opts.areaReveal || 0.5;
+  const revealDelay = opts.revealDelay ?? 500;
+  let pending = null; // 기준을 넘고 열리기를 기다리는 중
   let done = false;
   let last = null;
   let moves = 0;
@@ -110,11 +115,11 @@ window.ScratchCard = function (slotEl, { onReveal }) {
     const t = range.getBoundingClientRect();
     const b = canvas.getBoundingClientRect();
     if (!t.width || !b.width) return null;
-    // "꽝"처럼 글자가 짧으면 한 번 톡 눌러도 다 덮이니, 판정 영역을 최소 140×56으로 넓혀요.
+    // "꽝"처럼 글자가 짧으면 한 번에 다 덮이니, 판정 영역을 최소 170×80으로 넓혀요(붓 한 줄로는 다 안 덮여요).
     const cx = (t.left + t.right) / 2 - b.left;
     const cy = (t.top + t.bottom) / 2 - b.top;
-    const hw = Math.max(t.width, 140) / 2;
-    const hh = Math.max(t.height, 56) / 2;
+    const hw = Math.max(t.width, 170) / 2;
+    const hh = Math.max(t.height, 80) / 2;
     return { x0: cx - hw, x1: cx + hw, y0: cy - hh, y1: cy + hh };
   }
 
@@ -154,10 +159,14 @@ window.ScratchCard = function (slotEl, { onReveal }) {
         }
       }
     }
-    if (clear / total > 0.35 || (textTotal && textClear / textTotal > 0.6)) reveal();
+    // 기준을 넘으면 바로 열지 않고 잠깐 기다렸다가 열어요(그동안 계속 긁을 수 있어요).
+    if (clear / total > areaReveal || (textTotal && textClear / textTotal > textReveal)) {
+      if (!pending) pending = setTimeout(reveal, revealDelay);
+    }
   }
 
   function reveal() {
+    clearTimeout(pending);
     if (done) return;
     done = true;
     slotEl.classList.add('revealed');

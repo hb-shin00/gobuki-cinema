@@ -167,8 +167,9 @@
 
     // 긁어서 열릴 때는 덮개가 다 사라진 뒤(0.35초 페이드)에 하단 문구를 바꿔요.
     const finish = (afterFade) => {
+      ticket.style.setProperty('--fade', `${(CFG.scratch && CFG.scratch.fadeDuration) || 600}ms`);
       ticket.classList.add('revealed');
-      if (afterFade) setTimeout(updateFoot, 400);
+      if (afterFade) setTimeout(updateFoot, (CFG.scratch && CFG.scratch.fadeDuration) || 600);
       else updateFoot();
     };
     if (!me || revealed) {
