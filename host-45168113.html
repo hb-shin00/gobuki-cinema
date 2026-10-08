@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Lucky Seat 진행</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    :root { --ink:#1b1e24; --ink-2:#4b5260; --ink-3:#8b93a1; --line:#e4e8f0; --bg:#f4f6fa; --blue:#2f8cff; --red:#e5484d; --green:#0fa36b; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+    body { font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif; color: var(--ink); background: var(--bg); padding: 16px; }
+    button { font: inherit; cursor: pointer; border: 0; border-radius: 10px; }
+    .wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 14px; }
+    h1 { font-size: 22px; display: flex; align-items: center; gap: 8px; }
+    .tag { font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; color: #fff; }
+    .card { background: #fff; border-radius: 16px; padding: 18px; }
+    .card h2 { font-size: 15px; color: var(--ink-2); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .stat { background: var(--bg); border-radius: 12px; padding: 12px; }
+    .stat b { display: block; font-size: 26px; }
+    .stat span { font-size: 13px; color: var(--ink-3); }
+    .rounds { display: grid; gap: 8px; }
+    .round { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 12px; }
+    .round.now { border-color: var(--blue); background: #f0f7ff; }
+    .round.done { opacity: .75; }
+    .round .t { font-weight: 700; }
+    .round .p { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+    .round .w { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { background: #fff4c2; border-radius: 8px; padding: 4px 8px; font-size: 14px; }
+    .chip b { margin-right: 4px; }
+    .btn { padding: 10px 14px; background: var(--ink); color: #fff; font-weight: 600; white-space: nowrap; }
+    .btn:disabled { background: #c5cad3; cursor: default; }
+    .btn.blue { background: var(--blue); }
+    .btn.ghost { background: var(--bg); color: var(--ink); }
+    .btn.ghost:disabled { background: var(--bg); color: var(--ink-3); }
+    .btn.danger { background: #fff; color: var(--red); border: 1px solid #f3c4c5; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+    th { color: var(--ink-3); font-weight: 500; font-size: 13px; }
+    td .x { background: none; color: var(--ink-3); padding: 2px 6px; }
+    .winner-row td { background: #fffbe6; }
+    .gate { max-width: 320px; margin: 20vh auto; text-align: center; display: grid; gap: 12px; }
+    .gate input { height: 48px; border: 1px solid var(--line); border-radius: 10px; text-align: center; font-size: 20px; letter-spacing: 6px; }
+    .empty { color: var(--ink-3); font-size: 14px; padding: 8px 0; }
+
+    /* 진행 패널: 마이크 들고 읽기 좋게 크게 */
+    #main { padding-bottom: 110px; }
+    .live { background: #fff; border-radius: 16px; padding: 20px; border: 2px solid var(--blue); }
+    .live .head { font-size: 15px; font-weight: 700; color: var(--blue); }
+    .live .prize { margin-top: 4px; font-size: 22px; font-weight: 800; }
+    .winners-big { margin-top: 16px; display: grid; gap: 10px; }
+    .wbig { background: #fffbe6; border-radius: 12px; padding: 12px 14px; }
+    .wbig .name { font-size: 30px; font-weight: 800; line-height: 1.25; }
+    .wbig .meta { margin-top: 2px; font-size: 18px; color: var(--ink-2); font-weight: 600; }
+    .script { margin-top: 14px; background: var(--bg); border-radius: 12px; padding: 14px 16px; }
+    .script .label { font-size: 13px; font-weight: 700; color: var(--ink-3); margin-bottom: 6px; }
+    .script p { font-size: 19px; line-height: 1.6; font-weight: 600; word-break: keep-all; }
+    .script.next { background: #f0f7ff; }
+    .script b { color: var(--blue); }
+
+    /* 하단 고정 진행 버튼 */
+    .actionbar {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+      padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
+      background: linear-gradient(rgba(244, 246, 250, 0), var(--bg) 30%);
+    }
+    .actionbar .btn { display: block; width: 100%; max-width: 720px; margin: 0 auto; height: 64px; font-size: 20px; border-radius: 16px; }
+  </style>
+</head>
+<body>
+  <form class="gate" id="gate">
+    <h1 style="justify-content:center">Lucky Seat 진행</h1>
+    <input type="password" id="pin" inputmode="numeric" placeholder="비밀번호" autofocus>
+    <button class="btn">들어가기</button>
+  </form>
+
+  <div class="wrap" id="main" hidden>
+    <h1>Lucky Seat 진행 <span class="tag" id="mode"></span></h1>
+
+    <!-- 진행 패널: 현재 라운드 당첨자와 읽을 멘트 -->
+    <div class="live" id="live"></div>
+
+    <div class="card">
+      <div class="stats">
+        <div class="stat"><b id="st-count">0</b><span>참가자</span></div>
+        <div class="stat"><b id="st-round">대기</b><span>현재 라운드</span></div>
+        <div class="stat"><b id="st-reg">열림</b><span>참가 등록</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>전체 라운드 <span style="font-size:12px;color:var(--ink-3)">라운드 시작은 화면 아래 버튼으로 해요</span></h2>
+      <div class="rounds" id="rounds"></div>
+    </div>
+
+    <div class="card">
+      <h2>당첨자 명단 <button class="btn" id="copy-winners" disabled>명단 복사</button></h2>
+      <p class="empty" id="copy-help">라운드를 시작하면 버튼이 켜져요. 등수, 상품, 이름, 팀, 좌석을 복사해요. 엑셀이나 메신저에 바로 붙여넣으세요.</p>
+    </div>
+
+    <div class="card">
+      <h2>참가자 <span id="list-count"></span></h2>
+      <table><thead><tr><th>좌석</th><th>이름</th><th>팀</th><th></th></tr></thead><tbody id="people"></tbody></table>
+      <p class="empty" id="people-empty">아직 참가자가 없어요</p>
+    </div>
+
+    <div class="card">
+      <h2>관리</h2>
+      <div class="row">
+        <button class="btn ghost" id="toggle-reg">등록 마감</button>
+        <button class="btn ghost" id="dummies" hidden>테스트 참가자 56명 만들기</button>
+        <button class="btn danger" id="reset">전체 초기화</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 고정: 다음 라운드 시작 / 게임 종료 -->
+  <div class="actionbar" id="actionbar" hidden><button class="btn blue" id="next"></button></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script>
+  (function () {
+    const CFG = window.LS_CONFIG;
+    const store = window.LS_STORE;
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    let state = null;
+
+    $('#gate').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if ($('#pin').value !== CFG.adminPin) { $('#pin').value = ''; return alert('비밀번호가 달라요'); }
+      sessionStorage.setItem('ls-admin', '1');
+      open();
+    });
+
+    function open() {
+      $('#gate').hidden = true;
+      $('#main').hidden = false;
+      $('#actionbar').hidden = false;
+      $('#mode').textContent = store.mode === 'test' ? '테스트 모드' : '실제 모드';
+      $('#mode').style.background = store.mode === 'test' ? '#ff9f1c' : '#0fa36b';
+      $('#dummies').hidden = store.mode !== 'test';
+      store.subscribe(render);
+    }
+
+    const seat = (key) => { const [r, n] = key.split('-'); return `${r}열 ${n}번`; };
+
+    function render(s) {
+      state = s;
+      const people = Object.entries(s.participants).sort(([a], [b]) => a.localeCompare(b, 'en', { numeric: true }));
+      const round = s.game.round;
+      const total = CFG.rounds.length;
+      $('#st-count').textContent = people.length;
+      $('#st-round').textContent = s.game.ended ? '종료' : round ? `${round} / ${total}` : '대기';
+      $('#st-reg').textContent = s.game.regOpen ? '열림' : '마감';
+      $('#toggle-reg').textContent = round ? '라운드 시작 후에는 등록을 열 수 없어요' : s.game.regOpen ? '등록 마감' : '등록 다시 열기';
+      $('#toggle-reg').disabled = round > 0;
+      $('#list-count').textContent = `${people.length}명`;
+
+      // 라운드
+      const winners = new Set(Object.values(s.draws).flat());
+      $('#rounds').innerHTML = CFG.rounds.map((rank, i) => {
+        const r = i + 1;
+        const p = store.roundPrize(r);
+        const drawn = s.draws[r];
+        const cls = drawn ? (r === round ? 'now' : 'done') : '';
+        const chips = drawn ? (drawn.length ? drawn.map((k) => {
+          const who = s.participants[k];
+          return `<span class="chip"><b>${seat(k)}</b>${who ? esc(who.name) + ' · ' + esc(who.team) : '(삭제됨)'}</span>`;
+        }).join('') : '<span class="empty">추첨 대상이 없었어요</span>') : '';
+        const label = roundLabel(r);
+        const action = `<span style="font-size:13px;color:var(--ink-3)">${drawn ? '추첨 완료' : r === round + 1 && !s.game.ended ? '다음 차례' : ''}</span>`;
+        return `<div class="round ${cls}">
+          <div><div class="t">${label}</div><div class="p">${p.rank}위 · ${esc(p.name)} · ${p.count}명</div></div>
+          ${action}
+          ${chips ? `<div class="w">${chips}</div>` : ''}
+        </div>`;
+      }).join('');
+
+      renderLive(s, round, total);
+
+      // 참가자
+      $('#people').innerHTML = people.map(([k, p]) => `<tr class="${winners.has(k) ? 'winner-row' : ''}">
+        <td>${seat(k)}</td><td>${esc(p.name)}</td><td>${esc(p.team)}</td>
+        <td style="text-align:right">${round ? '' : `<button class="x" data-del="${k}" title="삭제">삭제</button>`}</td></tr>`).join('');
+      $('#people-empty').hidden = people.length > 0;
+      $('#copy-winners').disabled = winners.size === 0;
+    }
+
+    document.addEventListener('click', async (e) => {
+      const d = e.target.closest('[data-del]');
+      if (d) {
+        if (confirm(`${seat(d.dataset.del)} 참가자를 삭제할까요?`)) await store.removeParticipant(d.dataset.del);
+        return;
+      }
+    });
+
+    // 하단 고정 버튼: 다음 라운드 시작 → 마지막 라운드 뒤에는 게임 종료
+    $('#next').onclick = async () => {
+      const btn = $('#next');
+      const round = state.game.round;
+      const total = CFG.rounds.length;
+      if (state.game.ended) return;
+      if (round >= total) {
+        if (!confirm('게임을 종료할까요? 참가자 화면이 종료 화면으로 바뀌어요.')) return;
+        btn.disabled = true;
+        await store.endGame();
+        return;
+      }
+      const n = round + 1;
+      const p = store.roundPrize(n);
+      const won = new Set(Object.values(state.draws).flat());
+      const left = Object.keys(state.participants).filter((k) => !won.has(k)).length;
+      const warn = left < p.count ? `\n\n⚠️ 남은 참가자가 ${left}명뿐이라 ${p.count - left}명만 뽑혀요.` : '';
+      if (!confirm(`${roundLabel(n)}(${p.rank}위 ${p.name} ${p.count}명)를 시작할까요?${warn}`)) return;
+      btn.disabled = true;
+      await store.startRound(n);
+    };
+
+    const roundLabel = (r) => (r === CFG.rounds.length ? 'FINAL ROUND' : `ROUND ${r}`);
+
+    // 사회자 멘트
+    function startScript(r) {
+      const p = store.roundPrize(r);
+      const intro = r === 1 ? '지금부터 Lucky Seat를 시작합니다! ' : '';
+      return `${intro}<b>${roundLabel(r)}</b>! 이번 상품은 <b>${esc(p.name)}</b>, ${p.count}명에게 드려요. 휴대폰 화면의 스크래치를 긁어보세요!`;
+    }
+    function winnersScript(r, keys) {
+      if (!keys.length) return `${roundLabel(r)}는 당첨자가 없어요.`;
+      const list = keys.map((k) => {
+        const who = state.participants[k];
+        return who ? `${seat(k)} ${esc(who.team)} <b>${esc(who.name)}</b>님` : seat(k);
+      }).join(', ');
+      return `${roundLabel(r)} 당첨자를 발표합니다! ${list}, 축하드려요! 경품은 사무실로 전달해 드릴게요.`;
+    }
+    const CLOSING = '오늘 Lucky Seat에 참여해 주셔서 감사합니다! 당첨되신 분들의 경품은 사무실로 전달해 드릴게요.';
+
+    // 진행 패널 + 하단 버튼
+    function renderLive(s, round, total) {
+      const live = $('#live');
+      const btn = $('#next');
+      const count = Object.keys(s.participants).length;
+      if (s.game.ended) {
+        live.innerHTML = `<div class="head">게임 종료</div><div class="prize">모든 라운드가 끝났어요</div>
+          <div class="script"><div class="label">📢 마무리 멘트</div><p>${CLOSING}</p></div>`;
+        btn.textContent = '게임이 끝났어요';
+        btn.disabled = true;
+        return;
+      }
+      if (!round) {
+        live.innerHTML = `<div class="head">시작 전 · 참가자 ${count}명</div><div class="prize">첫 상품: ${esc(store.roundPrize(1).name)}</div>
+          <div class="script next"><div class="label">📢 시작 멘트 (읽고 아래 버튼을 눌러요)</div><p>${startScript(1)}</p></div>`;
+      } else {
+        const p = store.roundPrize(round);
+        const keys = s.draws[round] || [];
+        const big = keys.length ? keys.map((k) => {
+          const who = s.participants[k];
+          return `<div class="wbig"><div class="name">${who ? esc(who.name) : '(삭제됨)'}</div><div class="meta">${seat(k)} · ${who ? esc(who.team) : ''}</div></div>`;
+        }).join('') : '<div class="wbig"><div class="name">당첨자 없음</div></div>';
+        const next = round < total
+          ? `<div class="script next"><div class="label">📢 다음 라운드 멘트 (읽고 아래 버튼을 눌러요)</div><p>${startScript(round + 1)}</p></div>`
+          : `<div class="script next"><div class="label">📢 마무리 멘트 (읽고 아래 버튼으로 종료해요)</div><p>${CLOSING}</p></div>`;
+        live.innerHTML = `<div class="head">${roundLabel(round)} 당첨자</div><div class="prize">${p.rank}위 · ${esc(p.name)} · ${p.count}명</div>
+          <div class="winners-big">${big}</div>
+          <div class="script"><div class="label">📢 당첨자 발표 멘트 (참가자들이 다 긁은 뒤에 읽어요)</div><p>${winnersScript(round, keys)}</p></div>
+          ${next}`;
+      }
+      btn.disabled = false;
+      btn.textContent = round < total ? `${roundLabel(round + 1)} 시작` : '게임 종료하기';
+    }
+
+    // 당첨자 명단을 탭으로 구분된 표로 복사해요. 엑셀에 붙이면 칸이 나뉘어요.
+    function winnerTable() {
+      const rows = [['등수', '상품', '이름', '팀', '좌석']];
+      Object.keys(state.draws).map(Number)
+        .sort((a, b) => store.roundPrize(a).rank - store.roundPrize(b).rank)
+        .forEach((r) => {
+          const p = store.roundPrize(r);
+          state.draws[r].forEach((k) => {
+            const who = state.participants[k] || { name: '(삭제됨)', team: '' };
+            rows.push([`${p.rank}위`, p.name, who.name, who.team, seat(k)]);
+          });
+        });
+      return rows.map((r) => r.join('\t')).join('\n');
+    }
+
+    $('#copy-winners').onclick = async () => {
+      const text = winnerTable();
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      const n = text.split('\n').length - 1;
+      $('#copy-help').textContent = `${n}명의 명단을 복사했어요. 엑셀이나 메신저에 붙여넣으세요.`;
+    };
+
+    $('#toggle-reg').onclick = () => store.setRegOpen(!state.game.regOpen);
+    $('#dummies').onclick = () => store.addDummies(56 - Object.keys(state.participants).length);
+    $('#reset').onclick = () => {
+      if (confirm('참가자와 추첨 결과를 모두 지울까요? 되돌릴 수 없어요.')) store.reset();
+    };
+
+    if (sessionStorage.getItem('ls-admin')) open();
+  })();
+  </script>
+</body>
+</html>

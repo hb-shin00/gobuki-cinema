@@ -1,0 +1,264 @@
+/* Lucky Seat 참가자 화면 스타일
+   디자인 변경은 이 파일과 index.html의 마크업만 고치면 돼요. 게임 로직은 js/app.js에 있어요.
+
+   반응형 기준 (시안 393×852)
+   - 너비: 글자·캐릭터 크기는 그대로 두고, 카드·버튼·입력창·언덕 배경이 좌우로 늘어나거나 줄어들어요(최대 600px).
+   - 높이: 시안보다 낮은 화면에서만 --s(= 화면 높이 / 852, 최대 1)로 세로 간격과 이미지 크기를 줄여요(js/app.js의 fitScale).
+     넓은 화면이라고 확대되지는 않아요. */
+
+@font-face {
+  font-family: 'UhBeeSehyun';
+  src: url('../assets/fonts/uhbee-sehyun-bold.ttf') format('truetype');
+  font-display: swap;
+}
+
+:root {
+  --ink: #1b1e24;
+  --ink-2: #4b5260;
+  --ink-3: #8b93a1;
+  --line: #e4e8f0;
+  --btn: #2a2e36;
+  --panel: #f1f2f4;
+  --page: #f7f8fb;
+  --sky-1: #fdfeff;
+  --sky-2: #d0eafe;
+  --sky-3: #9fd3fe;
+  --blue: #50afff;
+  --logo-blue: #3e80e4;
+  --logo-sky: #a1ccf8;
+  --logo-ink: #222a33;
+  --red: #ff4d4f;
+  --hand: 'UhBeeSehyun', 'Pretendard Variable', sans-serif;
+  --s: 1;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, system-ui, sans-serif;
+  color: var(--ink);
+  background: #e9eef5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+input { font: inherit; }
+[hidden] { display: none !important; }
+.hand { font-family: var(--hand); font-weight: 400; }
+
+.app {
+  position: relative;
+  max-width: 600px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #fff;
+}
+
+.screen { display: none; position: relative; min-height: 100dvh; flex-direction: column; }
+.screen.active { display: flex; animation: fadeIn .25s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* 상단 뒤로가기 */
+.topbar { height: 56px; padding: 12px 12px 0; position: relative; z-index: 3; flex: none; }
+.back { width: 44px; height: 44px; display: grid; place-items: center; }
+.back svg { width: 24px; height: 24px; }
+
+/* 하단 버튼 */
+.cta {
+  display: block; width: 100%; height: 56px; border-radius: 14px;
+  background: var(--btn); color: #fff; font-size: 18px; font-weight: 500;
+}
+.cta.hand { font-size: 22px; }
+.cta:disabled { background: #c5cad3; }
+.cta-wrap { padding: 16px 20px calc(20px + env(safe-area-inset-bottom)); }
+/* 하단 고정 버튼: 화면이 짧아 스크롤이 생겨도 항상 화면 아래에 보여요 */
+.cta-fixed { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 600px; z-index: 10; }
+
+/* ---------- 하늘·언덕 배경 (입장, 대기, 종료) ---------- */
+.scene {
+  height: 100dvh; min-height: 480px;
+  background: linear-gradient(180deg, var(--sky-1) 6%, #e9f5fe 24%, var(--sky-2) 42%, var(--sky-3) 62%);
+}
+.scene-bg { position: absolute; left: 0; bottom: 0; width: 100%; height: calc(608px * var(--s)); object-fit: fill; z-index: 0; pointer-events: none; }
+.scene .heading { position: relative; z-index: 2; text-align: center; padding: calc(96px * var(--s)) 20px 0; }
+.scene .sub { margin-top: calc(14px * var(--s)); font-size: 16px; color: var(--ink-2); }
+.hand-title { font-family: var(--hand); font-size: clamp(24px, 7.6vw, 30px); white-space: nowrap; line-height: 1.3; font-weight: 400; letter-spacing: -.5px; }
+
+/* 입장 타이틀 */
+.eyebrow { font-family: 'Baloo 2', 'Pretendard Variable', sans-serif; font-size: clamp(20px, 6.4vw, 25px); font-weight: 800; color: var(--logo-sky); letter-spacing: .2px; line-height: 1.2; }
+.logo {
+  margin-top: 4px; font-family: 'Baloo 2', 'Pretendard Variable', sans-serif;
+  font-size: clamp(38px, 12.5vw, 49px); font-weight: 800; line-height: 1.1;
+  color: var(--logo-ink); letter-spacing: .5px; white-space: nowrap;
+}
+.logo span { color: var(--logo-blue); }
+
+/* 장식 클로버 */
+.deco { position: absolute; z-index: 1; pointer-events: none; }
+.deco-tr { width: calc(48px * var(--s)); right: 8%; top: calc(42px * var(--s)); transform: rotate(28deg); }
+.deco-l { width: calc(54px * var(--s)); left: calc(-62px * var(--s)); top: calc(20px * var(--s)); transform: rotate(-14deg); }
+.deco-br { width: calc(76px * var(--s)); right: calc(-50px * var(--s)); bottom: calc(-28px * var(--s)); transform: rotate(18deg); }
+
+.stage {
+  position: relative; z-index: 2; flex: 1; min-height: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+}
+.bubble {
+  position: relative; display: inline-flex; align-items: center; gap: 6px;
+  background: #fff; border-radius: 999px; padding: 0 calc(22px * var(--s));
+  height: calc(46px * var(--s)); min-height: 38px;
+  font-size: clamp(15px, 4.4vw, 17px); color: var(--ink); white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(40, 90, 150, .08);
+  margin-bottom: calc(32px * var(--s));
+}
+.bubble::after {
+  content: ''; position: absolute; left: 50%; bottom: -6px; width: 12px; height: 12px;
+  background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 2px;
+}
+.bubble svg { width: 15px; height: 15px; }
+/* 대기 화면 말풍선은 클로버와 띄워요 (꼬리 끝과 클로버 사이 9px) */
+#s-wait .bubble { margin-bottom: calc(38px * var(--s)); }
+
+.hero { position: relative; }
+.turtle { display: block; width: calc(210px * var(--s)); position: relative; z-index: 2; }
+.hero.front .turtle { width: calc(213px * var(--s)); }
+
+/* 입장·대기 화면 거북이는 90% 크기.
+   말풍선·클로버 위치는 그대로 두고, 거북이만 제자리에서 줄어든 것처럼 위아래 여백을 맞춰요. */
+#s-intro .turtle { width: calc(189px * var(--s)); margin-bottom: calc(10px * var(--s)); }
+#s-intro .bubble { margin-bottom: calc(46px * var(--s)); }
+#s-intro .deco-l { left: calc(-70px * var(--s)); top: calc(-3px * var(--s)); }
+#s-intro .deco-br { right: calc(-70px * var(--s)); bottom: calc(-53px * var(--s)); }
+#s-wait .hero.front .turtle { width: calc(192px * var(--s)); margin-bottom: calc(10px * var(--s)); }
+#s-wait .clover-btn { margin-bottom: calc(-9px * var(--s)); }
+
+/* 대기 화면 클로버 버튼: SVG 안에 빛 번짐 여백이 있어서 겹치게 배치 (말풍선 꼬리 끝과 클로버 사이 3px) */
+.clover-btn {
+  width: calc(134px * var(--s)); margin: calc(-46.5px * var(--s)) 0 calc(-23px * var(--s));
+  position: relative; z-index: 3; animation: wiggle 2.4s ease-in-out infinite;
+}
+.clover-btn img { display: block; width: 100%; }
+@keyframes wiggle { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-8deg) scale(1.05); } }
+
+/* 거북이 발 아래 영역: 언덕 배경과 같은 비율로 */
+.bottom {
+  position: relative; z-index: 3; flex: none;
+  height: calc(215px * var(--s));
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 20px calc(20px + env(safe-area-inset-bottom));
+}
+.info-card {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  background: #fff; border-radius: 26px; height: calc(97px * var(--s)); min-height: 76px;
+  margin: 0 5px calc(10px * var(--s)); padding: 0 16px;
+}
+.info-card .ico { width: 34px; height: 34px; flex: none; }
+/* 체크 아이콘 SVG는 40px 안에 여백이 있어서 원 크기가 다른 아이콘과 같아지도록 맞춰요 */
+.info-card img.ico { width: 40px; height: 40px; margin: -3px; }
+.info-card strong { display: block; font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
+.info-card span { display: block; margin-top: 2px; font-size: clamp(13px, 3.9vw, 15px); color: var(--ink-2); word-break: keep-all; }
+
+/* ---------- 좌석 정보 입력 ---------- */
+.form-screen { background: #fff; }
+.form-screen .cta-fixed { background: linear-gradient(rgba(255,255,255,0), #fff 24px); }
+.form-body { flex: 1; padding: calc(36px * var(--s)) 20px calc(112px + env(safe-area-inset-bottom)); }
+.form-body h1 { font-size: 28px; font-weight: 700; letter-spacing: -.5px; text-align: center; }
+.form-body .desc { margin-top: calc(14px * var(--s)); font-size: 16px; color: var(--ink-2); text-align: center; }
+.field { margin-top: calc(48px * var(--s)); }
+.field + .field { margin-top: calc(30px * var(--s)); }
+.field label { display: block; font-size: 15px; font-weight: 600; color: var(--ink-2); margin-bottom: 10px; }
+.field label i { color: var(--red); font-style: normal; margin-left: 2px; }
+.input {
+  width: 100%; height: max(52px, calc(72px * var(--s))); border: 1px solid var(--line); border-radius: 16px;
+  padding: 0 20px; font-size: 17px; color: var(--ink); background: #fff; outline: none;
+  transition: border-color .15s;
+}
+.input::placeholder { color: var(--ink-3); }
+.input:focus { border-color: #9aa3b2; }
+.input.error { border-color: var(--red); }
+.seat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.help { margin-top: 10px; font-size: 14px; color: #6b7280; }
+.help.error { color: var(--red); }
+
+/* ---------- 럭키 시트 상품 ---------- */
+.list-screen { background: var(--page); }
+.list-head { text-align: center; padding: calc(40px * var(--s)) 20px 0; }
+.list-head h1 { font-size: 30px; font-weight: 700; letter-spacing: -.5px; }
+.list-head p { margin-top: 14px; font-size: 16px; color: var(--ink-2); }
+.prize-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 10px; padding: 50px 20px 40px; }
+.prize-card { background: #fff; border-radius: 26px; padding: 18px 19px 20px; text-align: center; }
+.prize-img { background: var(--panel); border-radius: 18px; height: 99px; position: relative; overflow: hidden; }
+.prize-img img { position: absolute; inset: 0; margin: auto; max-width: 92%; max-height: 100%; object-fit: contain; }
+.prize-card .pname { margin-top: 18px; font-size: clamp(14px, 4.2vw, 16.5px); font-weight: 700; color: var(--ink-2); letter-spacing: -.3px; white-space: nowrap; }
+
+/* ---------- 라운드 (긁기·결과) ---------- */
+.round-screen { background: linear-gradient(180deg, var(--sky-1) 8%, #e3f2fe 26%, var(--sky-3) 62%, var(--blue) 100%); }
+.round-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: calc(84px * var(--s)) 25px calc(24px + env(safe-area-inset-bottom)); }
+.round-badge {
+  background: #000; color: #fff; font-size: 21px; font-weight: 800; letter-spacing: .2px;
+  border-radius: 999px; padding: calc(5px * var(--s)) 26px; line-height: 1.3; white-space: nowrap;
+}
+.round-sub { margin-top: calc(18px * var(--s)); font-size: clamp(14px, 4.1vw, 16px); color: var(--ink-2); white-space: nowrap; }
+.round-sub.watch { background: rgba(255, 255, 255, .8); padding: 5px 12px; border-radius: 999px; font-size: clamp(12px, 3.5vw, 14px); }
+.round-card {
+  width: 100%; margin-top: calc(30px * var(--s)); background: #fff; border-radius: 28px;
+  padding: calc(30px * var(--s)) 32px calc(28px * var(--s)); text-align: center;
+}
+.round-card .pname { margin-bottom: calc(18px * var(--s)); font-size: max(17px, calc(21px * var(--s))); font-weight: 700; color: #17191e; }
+.round-card .prize-img { height: calc(200px * var(--s)); border-radius: 22px; }
+.round-card .prize-img img { max-width: 70%; max-height: 70%; }
+
+/* 내 티켓 (시안 393 기준 150px: 위 띠 45px + 결과 105px) */
+.ticket {
+  position: relative; width: 100%; margin-top: calc(16px * var(--s));
+  height: max(112px, calc(150px * var(--s))); border-radius: 26px; background: #fff; overflow: hidden;
+}
+.ticket-head {
+  position: absolute; left: 0; right: 0; top: 0; height: max(34px, calc(45px * var(--s)));
+  display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none;
+  font-size: max(17px, calc(20px * var(--s))); font-weight: 800; letter-spacing: -.3px; color: #545b69;
+  /* 긁기 전: 반투명 흰 띠 뒤로 스크래치 무늬가 비쳐요 */
+  background: rgba(255, 255, 255, .5); transition: background .35s;
+}
+.ticket.revealed .ticket-head, .ticket.watch .ticket-head { background: #f0f0f0; }
+.ticket-result {
+  position: absolute; left: 0; right: 0; bottom: 0; top: max(34px, calc(45px * var(--s)));
+  display: flex; align-items: center; justify-content: center;
+  font-size: max(26px, calc(32px * var(--s))); font-weight: 800; letter-spacing: -1px; color: #17191e;
+}
+.ticket.watch .ticket-result { font-size: 17px; font-weight: 600; letter-spacing: 0; color: var(--ink-3); }
+.ticket canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; touch-action: none; transition: opacity .35s; }
+.ticket.revealed canvas { opacity: 0; pointer-events: none; }
+/* 당첨 테두리: 띠 위에도 보이도록 맨 위 레이어에 그려요. 다 긁은 뒤에만 나타나요 */
+.ticket::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; z-index: 3; pointer-events: none;
+  box-shadow: inset 0 0 0 5px #ffd84e; opacity: 0; transition: opacity .3s;
+}
+.ticket.win.revealed::after { opacity: 1; }
+/* 꽝: 결과가 열리면 좌우로 살짝 흔들려요 (0.45초) */
+.ticket.shake { animation: shake .45s ease-in-out; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(7px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+
+.round-foot { margin-top: calc(19px * var(--s)); min-height: 32px; text-align: center; }
+.round-msg { line-height: 1.5; color: #fff; font-size: 16px; text-shadow: 0 1px 2px rgba(0, 60, 130, .25); word-break: keep-all; animation: fadeIn .3s ease; }
+
+/* 당첨 축하 꽃가루 */
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 21; }
+
+/* 안내 토스트 */
+.toast {
+  position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%);
+  background: rgba(27, 30, 36, .92); color: #fff; font-size: 14px; padding: 10px 16px; border-radius: 10px;
+  z-index: 30; opacity: 0; transition: opacity .2s; pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+
+.mode-tag { position: fixed; top: 6px; right: 8px; z-index: 40; font-size: 11px; background: #ff9f1c; color: #fff; padding: 2px 6px; border-radius: 6px; }
