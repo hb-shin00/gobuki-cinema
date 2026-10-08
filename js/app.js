@@ -256,7 +256,9 @@
     if (s.game.ended) {
       renderEnd();
       show('end');
-    } else if (round > 0 && s.draws[round]) {
+    } else if (round > 0) {
+      // Firebase는 빈 목록을 저장하지 않아서, 당첨자가 없는 라운드는 draws[round]가 비어 있어요.
+      // 라운드가 시작됐으면 당첨자 유무와 상관없이 라운드 화면을 보여줘요.
       if (renderedRound !== round) {
         show('round');
         renderRound(round);

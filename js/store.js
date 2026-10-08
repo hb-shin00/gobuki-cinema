@@ -17,7 +17,9 @@
     return {
       game: Object.assign(base.game, s.game || {}),
       participants: s.participants || {},
-      draws: s.draws || {},
+      // Firebase는 숫자 키(1, 2, 3…)를 배열로 바꾸면서 빈 자리에 null을 넣고, 빈 목록은 아예 저장하지 않아요.
+      // 항상 { "1": [...], "2": [...] } 형태의 객체로 맞춰서 쓰는 쪽에서 신경 쓰지 않게 해요.
+      draws: Object.fromEntries(Object.entries(s.draws || {}).filter(([, v]) => Array.isArray(v))),
     };
   }
 

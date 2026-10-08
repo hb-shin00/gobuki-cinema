@@ -168,7 +168,8 @@
       $('#rounds').innerHTML = CFG.rounds.map((rank, i) => {
         const r = i + 1;
         const p = store.roundPrize(r);
-        const drawn = s.draws[r];
+        // Firebase는 빈 목록을 저장하지 않으니, 이미 시작한 라운드는 당첨자가 없어도 추첨 완료로 봐요.
+        const drawn = s.draws[r] || (r <= round ? [] : null);
         const cls = drawn ? (r === round ? 'now' : 'done') : '';
         const chips = drawn ? (drawn.length ? drawn.map((k) => {
           const who = s.participants[k];
