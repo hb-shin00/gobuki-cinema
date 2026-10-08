@@ -183,6 +183,7 @@
           finish(true);
           if (won) confetti(ticket);
           else ticket.classList.add('shake'); // 꽝: 티켓이 좌우로 살짝 흔들려요
+          vibrate(won);
         },
       });
     }
@@ -193,6 +194,13 @@
       foot.innerHTML = `<p class="round-msg">${msg}</p>`;
     }
     updateFoot();
+  }
+
+  // ---------- 진동 (안드로이드만 지원, 아이폰 웹은 진동 기능이 없어요) ----------
+  // 당첨: 짧게 세 번 + 길게 한 번(축하), 꽝: 짧게 두 번(아쉬움)
+  function vibrate(won) {
+    if (!navigator.vibrate) return;
+    try { navigator.vibrate(won ? [60, 50, 60, 50, 60, 80, 250] : [70, 60, 70]); } catch {}
   }
 
   // ---------- 당첨 축하: 티켓에서 꽃가루가 터져요 ----------

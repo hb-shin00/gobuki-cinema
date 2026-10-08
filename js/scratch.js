@@ -170,7 +170,6 @@ window.ScratchCard = function (slotEl, { onReveal }) {
     if (done) return;
     done = true;
     slotEl.classList.add('revealed');
-    if (navigator.vibrate) navigator.vibrate(30);
     onReveal && onReveal();
   }
 
