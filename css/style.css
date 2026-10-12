@@ -6,11 +6,21 @@
    - 높이: 시안보다 낮은 화면에서만 --s(= 화면 높이 / 852, 최대 1)로 세로 간격과 이미지 크기를 줄여요(js/app.js의 fitScale).
      넓은 화면이라고 확대되지는 않아요. */
 
+/* 손글씨 폰트: 이 게임에서 쓰는 글자만 남긴 작은 파일(43KB)을 먼저 쓰고,
+   혹시 없는 글자가 나오면 그 글자만 전체 파일(604KB)에서 가져와요.
+   화면 문구에 새 글자를 넣었다면 subset 파일을 다시 만들어 주세요(README 참고). */
 @font-face {
   font-family: 'UhBeeSehyun';
+  src: url('../assets/fonts/uhbee-sehyun-bold.subset.woff2') format('woff2');
+  font-display: block;
+}
+@font-face {
+  font-family: 'UhBeeSehyunFull';
   src: url('../assets/fonts/uhbee-sehyun-bold.ttf') format('truetype');
   font-display: swap;
 }
+html.fonts-loading .app { opacity: 0; }
+.app { transition: opacity .25s ease; }
 
 :root {
   --ink: #1b1e24;
@@ -28,7 +38,7 @@
   --logo-sky: #a1ccf8;
   --logo-ink: #222a33;
   --red: #ff4d4f;
-  --hand: 'UhBeeSehyun', 'Pretendard Variable', sans-serif;
+  --hand: 'UhBeeSehyun', 'UhBeeSehyunFull', 'Pretendard Variable', sans-serif;
   --s: 1;   /* 간격·여백 비율: 화면 높이 / 852 */
   --so: 1;  /* 그림 요소(거북이·말풍선·클로버) 비율: 화면 높이 / 720 — 덜 줄어들어요 */
 }

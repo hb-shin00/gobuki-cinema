@@ -375,8 +375,17 @@
   }
   renderPrizeList();
   // 긁기 덮개 문구를 캔버스에 그리기 전에 폰트를 먼저 불러와요.
-  const fontReady = document.fonts
-    ? document.fonts.load("700 31px 'Pretendard Variable'", '럭키시트 복권을 긁어보세요').catch(() => {})
+  // 화면에 쓰는 폰트(본문·손글씨·타이틀)를 받아온 뒤에 한 번에 보여줘요. 늦어도 1.5초 뒤에는 보여줘요.
+  const loadFonts = document.fonts
+    ? Promise.all([
+      document.fonts.load("500 16px 'Pretendard Variable'", '참여 정보를 알려주세요'),
+      document.fonts.load("20px UhBeeSehyun", '시작하기 잠시만 기다려주세요'),
+      document.fonts.load("800 45px 'Baloo 2'", 'LUCKY SEAT'),
+    ]).catch(() => {})
     : Promise.resolve();
-  fontReady.then(() => store.subscribe(onState));
+  const reveal = () => document.documentElement.classList.remove('fonts-loading');
+  Promise.race([loadFonts, new Promise((r) => setTimeout(r, 1500))]).then(() => {
+    store.subscribe(onState);
+    reveal();
+  });
 })();
