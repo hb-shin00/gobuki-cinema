@@ -29,7 +29,8 @@
   --logo-ink: #222a33;
   --red: #ff4d4f;
   --hand: 'UhBeeSehyun', 'Pretendard Variable', sans-serif;
-  --s: 1;
+  --s: 1;   /* 간격·여백 비율: 화면 높이 / 852 */
+  --so: 1;  /* 그림 요소(거북이·말풍선·클로버) 비율: 화면 높이 / 720 — 덜 줄어들어요 */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,6 +84,8 @@ input { font: inherit; }
 }
 .scene-bg { position: absolute; left: 0; bottom: 0; width: 100%; height: calc(608px * var(--s)); object-fit: fill; z-index: 0; pointer-events: none; }
 .scene .heading { position: relative; z-index: 2; text-align: center; padding: calc(96px * var(--s)) 20px 0; }
+/* 대기 화면은 말풍선+클로버+거북이가 쌓여 있어서, 화면이 낮을수록 위쪽 여백을 더 줄여요(시안 높이에서는 96px 그대로) */
+#s-wait .heading { padding-top: max(16px, calc(96px * var(--s) - (1 - var(--s)) * 120px)); }
 .scene .sub { margin-top: calc(14px * var(--s)); font-size: 16px; color: var(--ink-2); }
 .hand-title { font-family: var(--hand); font-size: clamp(24px, 7.6vw, 30px); white-space: nowrap; line-height: 1.3; font-weight: 400; letter-spacing: -.5px; }
 
@@ -97,9 +100,9 @@ input { font: inherit; }
 
 /* 장식 클로버 */
 .deco { position: absolute; z-index: 1; pointer-events: none; }
-.deco-tr { width: calc(48px * var(--s)); right: 8%; top: calc(42px * var(--s)); transform: rotate(28deg); }
-.deco-l { width: calc(54px * var(--s)); left: calc(-62px * var(--s)); top: calc(20px * var(--s)); transform: rotate(-14deg); }
-.deco-br { width: calc(76px * var(--s)); right: calc(-50px * var(--s)); bottom: calc(-28px * var(--s)); transform: rotate(18deg); }
+.deco-tr { width: calc(48px * var(--so)); right: 8%; top: calc(42px * var(--s)); transform: rotate(28deg); }
+.deco-l { width: calc(54px * var(--so)); left: calc(-62px * var(--so)); top: calc(20px * var(--so)); transform: rotate(-14deg); }
+.deco-br { width: calc(76px * var(--so)); right: calc(-50px * var(--so)); bottom: calc(-28px * var(--so)); transform: rotate(18deg); }
 
 .stage {
   position: relative; z-index: 2; flex: 1; min-height: 0;
@@ -107,31 +110,31 @@ input { font: inherit; }
 }
 /* 말풍선: 시안 SVG(높이 59px, 꼬리 끝은 아래에서 4.7px 위)를 그대로 써요.
    입장 start_FixedTooltip_flat.svg, 종료 end_FixedTooltip_flat.svg, 대기 FixedTooltip_flat.svg */
-.tooltip-img { display: block; height: calc(59px * var(--s)); width: auto; margin-bottom: calc(19px * var(--s)); position: relative; z-index: 3; }
+.tooltip-img { display: block; height: calc(59px * var(--so)); width: auto; margin-bottom: calc(19px * var(--s)); position: relative; z-index: 3; }
 /* 대기 화면 "럭키 시트 상품 보기" 말풍선(FixedTooltip.svg, 184×59).
    꼬리 끝이 이미지 아래에서 4.7px 위에 있어서, 꼬리 끝과 클로버 사이가 9px이 되도록 아래 여백을 맞춰요. */
-.tooltip-btn { display: block; width: calc(184px * var(--s)); margin-bottom: calc(25px * var(--s)); position: relative; z-index: 4; }
+.tooltip-btn { display: block; width: calc(184px * var(--so)); margin-bottom: calc(25px * var(--so)); position: relative; z-index: 4; }
 .tooltip-btn img { display: block; width: 100%; height: auto; }
 /* 그림자는 SVG 안 필터 대신 CSS로 입혀요. SVG 안에 필터가 있으면 아이폰 등에서 저해상도로 그려져 깨져 보여요.
    (*_flat.svg = 원본 SVG에서 그림자 필터만 뺀 사본. 그림자 값은 원본과 같아요) */
 .tooltip-img, .tooltip-btn img { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .05)); }
 
 .hero { position: relative; }
-.turtle { display: block; width: calc(210px * var(--s)); position: relative; z-index: 2; }
-.hero.front .turtle { width: calc(213px * var(--s)); }
+.turtle { display: block; width: calc(210px * var(--so)); position: relative; z-index: 2; }
+.hero.front .turtle { width: calc(213px * var(--so)); }
 
 /* 입장·대기 화면 거북이는 90% 크기.
    말풍선·클로버 위치는 그대로 두고, 거북이만 제자리에서 줄어든 것처럼 위아래 여백을 맞춰요. */
-#s-intro .turtle { width: calc(189px * var(--s)); margin-bottom: calc(10px * var(--s)); }
+#s-intro .turtle { width: calc(189px * var(--so)); margin-bottom: calc(10px * var(--s)); }
 #s-intro .tooltip-img { margin-bottom: calc(33px * var(--s)); }
-#s-intro .deco-l { left: calc(-70px * var(--s)); top: calc(-3px * var(--s)); }
-#s-intro .deco-br { right: calc(-70px * var(--s)); bottom: calc(-53px * var(--s)); }
-#s-wait .hero.front .turtle { width: calc(192px * var(--s)); margin-bottom: calc(10px * var(--s)); }
-#s-wait .clover-btn { margin-bottom: calc(-9px * var(--s)); }
+#s-intro .deco-l { left: calc(-70px * var(--so)); top: calc(-3px * var(--so)); }
+#s-intro .deco-br { right: calc(-70px * var(--so)); bottom: calc(-53px * var(--so)); }
+#s-wait .hero.front .turtle { width: calc(192px * var(--so)); margin-bottom: calc(10px * var(--s)); }
+#s-wait .clover-btn { margin-bottom: calc(-9px * var(--so)); }
 
 /* 대기 화면 클로버 버튼: SVG 안에 빛 번짐 여백이 있어서 겹치게 배치 (말풍선 꼬리 끝과 클로버 사이 3px) */
 .clover-btn {
-  width: calc(134px * var(--s)); margin: calc(-46.5px * var(--s)) 0 calc(-23px * var(--s));
+  width: calc(134px * var(--so)); margin: calc(-46.5px * var(--so)) 0 calc(-23px * var(--so));
   position: relative; z-index: 3; animation: wiggle 2.4s ease-in-out infinite;
 }
 .clover-btn img { display: block; width: 100%; filter: drop-shadow(0 8px 34px rgba(48, 130, 195, .5)); }

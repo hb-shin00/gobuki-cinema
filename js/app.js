@@ -349,8 +349,12 @@
     if (lastW === w && (Math.abs(h - lastH) < 120 || document.activeElement?.tagName === 'INPUT')) return;
     lastW = w;
     lastH = h;
+    // 간격·여백은 시안 전체 높이(852, 상태바·홈바 포함) 기준으로 줄이고,
+    // 그림 요소는 실제 브라우저에서 쓸 수 있는 높이(약 720) 기준으로 덜 줄여서 버튼·타이틀과 비율을 맞춰요.
     const s = Math.min(1, Math.max(0.6, h / 852));
+    const so = Math.min(1, Math.max(0.75, h / 720));
     document.documentElement.style.setProperty('--s', s.toFixed(3));
+    document.documentElement.style.setProperty('--so', so.toFixed(3));
   }
   fitScale();
   window.addEventListener('resize', fitScale);
