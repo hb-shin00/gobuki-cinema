@@ -284,6 +284,22 @@
     cdTimer = setInterval(tick, 50);
   }
 
+  // ---------- 하단 카드 글자 한 줄 맞춤 ----------
+  // 카드 폭보다 글자가 길면 글자 크기를 0.5px씩 줄여서 한 줄에 들어가게 해요(최소 11px).
+  function fitInfoCards() {
+    setTimeout(() => {
+      document.querySelectorAll('.info-card:not([hidden]) strong, .info-card:not([hidden]) span').forEach((el) => {
+        el.style.fontSize = '';
+        let size = parseFloat(getComputedStyle(el).fontSize);
+        while (el.scrollWidth > el.clientWidth + 1 && size > 11) {
+          size -= 0.5;
+          el.style.fontSize = size + 'px';
+        }
+      });
+    }, 0);
+  }
+  window.addEventListener('resize', fitInfoCards);
+
   // ---------- 진동 (안드로이드만 지원, 아이폰 웹은 진동 기능이 없어요) ----------
   // 당첨: 짧게 세 번 + 길게 한 번(축하), 꽝: 짧게 두 번(아쉬움)
   function vibrate(won) {
@@ -354,6 +370,7 @@
     if (s.game.ended) {
       renderEnd();
       show('end');
+      fitInfoCards();
     } else if (round > 0) {
       // Firebase는 빈 목록을 저장하지 않아서, 당첨자가 없는 라운드는 draws[round]가 비어 있어요.
       // 라운드가 시작됐으면 당첨자 유무와 상관없이 라운드 화면을 보여줘요.
@@ -365,6 +382,7 @@
       }
     } else if (me || watching) {
       if (current !== 'list') show('wait');
+      fitInfoCards();
     } else if (!current || current === 'wait' || current === 'round' || current === 'end') {
       show('intro');
     }
