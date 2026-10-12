@@ -111,9 +111,10 @@ input { font: inherit; }
 
 /* 장식 클로버 */
 .deco { position: absolute; z-index: 1; pointer-events: none; }
-.deco-tr { width: calc(48px * var(--so)); right: 8%; top: calc(42px * var(--s)); transform: rotate(28deg); }
-.deco-l { width: calc(54px * var(--so)); left: calc(-62px * var(--so)); top: calc(20px * var(--so)); transform: rotate(-14deg); }
-.deco-br { width: calc(76px * var(--so)); right: calc(-50px * var(--so)); bottom: calc(-28px * var(--so)); transform: rotate(18deg); }
+/* 장식 클로버는 시안보다 90% 크기. 줄인 만큼 위치를 보정해서 중심은 그대로예요 */
+.deco-tr { width: calc(43.2px * var(--so)); right: calc(8% + 2.4px * var(--so)); top: calc(42px * var(--s) + 2.4px * var(--so)); transform: rotate(28deg); }
+.deco-l { width: calc(48.6px * var(--so)); left: calc(-59.3px * var(--so)); top: calc(22.7px * var(--so)); transform: rotate(-14deg); }
+.deco-br { width: calc(68.4px * var(--so)); right: calc(-46.2px * var(--so)); bottom: calc(-24.2px * var(--so)); transform: rotate(18deg); }
 
 .stage {
   position: relative; z-index: 2; flex: 1; min-height: 0;
@@ -138,8 +139,8 @@ input { font: inherit; }
    말풍선·클로버 위치는 그대로 두고, 거북이만 제자리에서 줄어든 것처럼 위아래 여백을 맞춰요. */
 #s-intro .turtle { width: calc(189px * var(--so)); margin-bottom: calc(10px * var(--s)); }
 #s-intro .tooltip-img { margin-bottom: calc(33px * var(--s)); }
-#s-intro .deco-l { left: calc(-70px * var(--so)); top: calc(-3px * var(--so)); }
-#s-intro .deco-br { right: calc(-70px * var(--so)); bottom: calc(-53px * var(--so)); }
+#s-intro .deco-l { left: calc(-67.3px * var(--so)); top: calc(-0.3px * var(--so)); }
+#s-intro .deco-br { right: calc(-66.2px * var(--so)); bottom: calc(-49.2px * var(--so)); }
 #s-wait .hero.front .turtle { width: calc(192px * var(--so)); margin-bottom: calc(10px * var(--s)); }
 #s-wait .clover-btn { margin-bottom: calc(-9px * var(--so)); }
 
