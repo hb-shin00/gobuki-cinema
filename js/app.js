@@ -340,23 +340,31 @@
   // ---------- 반응형: 화면 크기 비율 ----------
   // 시안 높이(852px)보다 낮은 화면에서만 --s를 1보다 작게 넣어요. 넓은 화면은 확대하지 않고 좌우로만 늘어나요.
   // 너비가 바뀌면(회전 등) 다시 계산하고, 키보드가 올라오거나 주소창이 접히는 정도의 높이 변화는 무시해요.
+  // 같은 너비에서는 지금까지 본 가장 큰 높이를 기준으로 해요.
+  // - 화면이 커지면(주소창이 접히거나, 처음 열 때 잠깐 작게 잡혔다가 커지면) 바로 다시 계산해요.
+  // - 화면이 작아지는 건(키보드, 주소창 펼침) 무시해서 화면이 출렁이지 않게 해요.
+  // - 너비가 바뀌면(회전) 처음부터 다시 재요.
   let lastW = 0;
-  let lastH = 0;
+  let maxH = 0;
   function fitScale() {
     const w = window.innerWidth;
     const h = window.innerHeight;
-    if (lastW === w && (Math.abs(h - lastH) < 120 || document.activeElement?.tagName === 'INPUT')) return;
-    lastW = w;
-    lastH = h;
+    if (w !== lastW) { lastW = w; maxH = h; }
+    else if (h > maxH) maxH = h;
+    else return;
     // 간격·여백은 시안 전체 높이(852, 상태바·홈바 포함) 기준으로 줄이고,
     // 그림 요소는 실제 브라우저에서 쓸 수 있는 높이(약 720) 기준으로 덜 줄여서 버튼·타이틀과 비율을 맞춰요.
-    const s = Math.min(1, Math.max(0.6, h / 852));
-    const so = Math.min(1, Math.max(0.75, h / 720));
+    const s = Math.min(1, Math.max(0.6, maxH / 852));
+    const so = Math.min(1, Math.max(0.75, maxH / 720));
     document.documentElement.style.setProperty('--s', s.toFixed(3));
     document.documentElement.style.setProperty('--so', so.toFixed(3));
   }
   fitScale();
   window.addEventListener('resize', fitScale);
+  // 처음 열 때 브라우저가 높이를 잠깐 작게 알려주는 경우가 있어서 조금 뒤에 한 번 더 재요.
+  setTimeout(fitScale, 300);
+  setTimeout(fitScale, 1000);
+  window.addEventListener('pageshow', fitScale);
 
   // ---------- 시작 ----------
   if (store.mode === 'test') {
