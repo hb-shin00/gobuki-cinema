@@ -106,12 +106,15 @@ input { font: inherit; }
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
 }
 /* 말풍선: 시안 SVG(높이 59px, 꼬리 끝은 아래에서 4.7px 위)를 그대로 써요.
-   입장 start_FixedTooltip.svg, 종료 end_FixedTooltip.svg, 대기 FixedTooltip.svg */
+   입장 start_FixedTooltip_flat.svg, 종료 end_FixedTooltip_flat.svg, 대기 FixedTooltip_flat.svg */
 .tooltip-img { display: block; height: calc(59px * var(--s)); width: auto; margin-bottom: calc(19px * var(--s)); position: relative; z-index: 3; }
 /* 대기 화면 "럭키 시트 상품 보기" 말풍선(FixedTooltip.svg, 184×59).
    꼬리 끝이 이미지 아래에서 4.7px 위에 있어서, 꼬리 끝과 클로버 사이가 9px이 되도록 아래 여백을 맞춰요. */
 .tooltip-btn { display: block; width: calc(184px * var(--s)); margin-bottom: calc(25px * var(--s)); position: relative; z-index: 4; }
 .tooltip-btn img { display: block; width: 100%; height: auto; }
+/* 그림자는 SVG 안 필터 대신 CSS로 입혀요. SVG 안에 필터가 있으면 아이폰 등에서 저해상도로 그려져 깨져 보여요.
+   (*_flat.svg = 원본 SVG에서 그림자 필터만 뺀 사본. 그림자 값은 원본과 같아요) */
+.tooltip-img, .tooltip-btn img { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, .05)); }
 
 .hero { position: relative; }
 .turtle { display: block; width: calc(210px * var(--s)); position: relative; z-index: 2; }
@@ -131,7 +134,7 @@ input { font: inherit; }
   width: calc(134px * var(--s)); margin: calc(-46.5px * var(--s)) 0 calc(-23px * var(--s));
   position: relative; z-index: 3; animation: wiggle 2.4s ease-in-out infinite;
 }
-.clover-btn img { display: block; width: 100%; }
+.clover-btn img { display: block; width: 100%; filter: drop-shadow(0 8px 34px rgba(48, 130, 195, .5)); }
 @keyframes wiggle { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-8deg) scale(1.05); } }
 
 /* 거북이 발 아래 영역: 언덕 배경과 같은 비율로 */
