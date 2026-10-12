@@ -162,7 +162,7 @@ input { font: inherit; }
 .info-card {
   display: flex; align-items: center; justify-content: center; gap: 16px;
   background: #fff; border-radius: 26px; height: calc(97px * var(--s)); min-height: 76px;
-  margin: 0 5px calc(10px * var(--s)); padding: 0 16px;
+  margin: 0 5px calc(10px * var(--s)); padding: 0 20px;
 }
 /* 시각 보정: 왼쪽 아이콘(34px)+간격(16px)만큼 오른쪽에도 빈 공간을 둬서 글자가 카드 가운데에 오게 해요 */
 .info-card::after { content: ''; width: 34px; flex: none; }
