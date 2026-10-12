@@ -3,12 +3,14 @@
 // 화면 코드는 LS_STORE만 쓰기 때문에 저장 방식이 바뀌어도 화면은 그대로예요.
 //
 // 데이터 구조
-//   game:         { round: 0~6, regOpen: true|false, ended: true|false }
+//   game:         { round: 0~6, regOpen: true|false, ended: true|false, startAt: 라운드 카운트다운이 끝나는 서버 시각(ms) }
 //   participants: { "K-4": { name, team, row, num, ts } }
 //   draws:        { "1": ["K-4", "B-7", "F-11"], ... }  // 라운드 번호 → 당첨 좌석
 
 (function () {
   const CFG = window.LS_CONFIG;
+  // 라운드를 시작하면 모든 폰이 이 시간 뒤에 동시에 긁기 시작해요(3-2-1 카운트다운). 신호가 늦게 도착하는 폰을 위해 0.5초 여유를 둬요.
+  const COUNTDOWN_LEAD = 3500;
   const EMPTY = () => ({ game: { round: 0, regOpen: true, ended: false }, participants: {}, draws: {} });
 
   function normalize(s) {
@@ -70,6 +72,7 @@
     });
     return {
       mode: 'test',
+      now: () => Date.now(),
       subscribe(cb) { listeners.push(cb); cb(read()); },
       current: read,
       async register(p) {
@@ -85,6 +88,7 @@
         s.draws[round] = pickWinners(s, roundPrize(round).count);
         s.game.round = round;
         s.game.regOpen = false;
+        s.game.startAt = Date.now() + COUNTDOWN_LEAD;
         write(s);
       },
       async endGame() { const s = read(); s.game.ended = true; write(s); },
@@ -111,8 +115,13 @@
   function firebaseBackend() {
     firebase.initializeApp(CFG.firebase);
     const root = firebase.database().ref('luckyseat');
+    // 폰마다 시계가 조금씩 달라서, Firebase 서버 시각과의 차이를 받아 두고 서버 시각으로 계산해요.
+    let offset = 0;
+    firebase.database().ref('.info/serverTimeOffset').on('value', (snap) => { offset = snap.val() || 0; });
+    const now = () => Date.now() + offset;
     return {
       mode: 'live',
+      now,
       subscribe(cb) { root.on('value', (snap) => cb(normalize(snap.val()))); },
       async register(p) {
         // 1라운드가 시작되면 등록을 받지 않아요. 늦게 온 사람은 구경만 해요.
@@ -128,7 +137,7 @@
       async startRound(round) {
         const s = normalize((await root.get()).val());
         const winners = pickWinners(s, roundPrize(round).count);
-        await root.update({ ['draws/' + round]: winners, 'game/round': round, 'game/regOpen': false });
+        await root.update({ ['draws/' + round]: winners, 'game/round': round, 'game/regOpen': false, 'game/startAt': now() + COUNTDOWN_LEAD });
       },
       async endGame() { await root.child('game/ended').set(true); },
       async setRegOpen(open) { await root.child('game/regOpen').set(open); },

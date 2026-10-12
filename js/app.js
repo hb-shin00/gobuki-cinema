@@ -144,6 +144,7 @@
     const prize = store.roundPrize(round);
     const winners = state.draws[round] || [];
     const isFinal = round === CFG.rounds.length;
+    runCountdown(round, prize, isFinal);
     const won = !!me && winners.includes(me.key);
     const revealed = (ls.get('ls-rev', {})[round] || []).length > 0;
 
@@ -244,6 +245,43 @@
         joinTimer = setTimeout(nextJoiner, 300);
       }, 2000);
     }, 250);
+  }
+
+  // ---------- 라운드 시작 카운트다운 ----------
+  // 사회자가 시작하면 서버에 시작 시각(startAt)이 저장돼요. 모든 폰이 서버 시각 기준으로 3-2-1을 세서 같은 순간에 끝나요.
+  // 이미 시작 시각이 지났으면(늦게 들어오거나 새로고침) 카운트다운 없이 바로 보여줘요.
+  let cdTimer = null;
+  function runCountdown(round, prize, isFinal) {
+    const box = $('#countdown');
+    clearInterval(cdTimer);
+    box.classList.remove('out');
+    const startAt = state.game.startAt || 0;
+    if (store.now() >= startAt) { box.hidden = true; return; }
+    $('#cd-round').textContent = isFinal ? 'FINAL ROUND' : `ROUND ${round}`;
+    $('#cd-prize').textContent = `${prize.name} · ${prize.count}명`;
+    box.hidden = false;
+    const num = $('#cd-num');
+    let shown = null;
+    const tick = () => {
+      const left = startAt - store.now();
+      const label = left > 0 ? String(Math.min(3, Math.ceil(left / 1000))) : '긁어요!';
+      if (label !== shown) {
+        shown = label;
+        num.textContent = label;
+        num.classList.toggle('go', left <= 0);
+        num.classList.remove('pop');
+        void num.offsetWidth; // 애니메이션 다시 재생
+        num.classList.add('pop');
+        if (navigator.vibrate) { try { navigator.vibrate(left > 0 ? 25 : 60); } catch {} }
+      }
+      if (left <= -600) {
+        clearInterval(cdTimer);
+        box.classList.add('out');
+        setTimeout(() => { box.hidden = true; box.classList.remove('out'); }, 350);
+      }
+    };
+    tick();
+    cdTimer = setInterval(tick, 50);
   }
 
   // ---------- 진동 (안드로이드만 지원, 아이폰 웹은 진동 기능이 없어요) ----------

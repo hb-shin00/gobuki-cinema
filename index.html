@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=block">
-  <link rel="stylesheet" href="css/style.css?v=202610121744">
+  <link rel="stylesheet" href="css/style.css?v=202610121808">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute">
@@ -110,6 +110,12 @@
 
   <!-- 4~5. 라운드: 긁기 → 결과 -->
   <section class="screen round-screen" id="s-round">
+    <!-- 라운드 시작 카운트다운: 끝날 때까지 티켓을 가려서 모두 같은 순간에 긁기 시작해요 -->
+    <div class="countdown" id="countdown" hidden>
+      <p class="cd-round" id="cd-round"></p>
+      <p class="cd-prize" id="cd-prize"></p>
+      <div class="cd-num hand" id="cd-num"></div>
+    </div>
     <div class="round-body">
       <div class="round-badge" id="round-badge">ROUND 1</div>
       <p class="round-sub" id="round-sub">스크래치를 긁어 당첨 여부를 확인하세요</p>
@@ -157,9 +163,9 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="js/config.js?v=202610121744"></script>
-<script src="js/store.js?v=202610121744"></script>
-<script src="js/scratch.js?v=202610121744"></script>
-<script src="js/app.js?v=202610121744"></script>
+<script src="js/config.js?v=202610121808"></script>
+<script src="js/store.js?v=202610121808"></script>
+<script src="js/scratch.js?v=202610121808"></script>
+<script src="js/app.js?v=202610121808"></script>
 </body>
 </html>
