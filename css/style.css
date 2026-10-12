@@ -227,6 +227,7 @@ input { font: inherit; }
   position: absolute; left: 0; right: 0; bottom: 0; top: max(34px, calc(45px * var(--s)));
   display: flex; align-items: center; justify-content: center;
   font-size: max(26px, calc(32px * var(--s))); font-weight: 800; letter-spacing: -1px; color: #17191e;
+  white-space: nowrap;
 }
 .ticket.watch .ticket-result { font-size: 17px; font-weight: 600; letter-spacing: 0; color: var(--ink-3); }
 .ticket canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; touch-action: none; transition: opacity var(--fade, .6s) ease; }

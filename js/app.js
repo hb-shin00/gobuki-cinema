@@ -163,7 +163,7 @@
     old.replaceWith(ticket);
     ticket.className = 'ticket' + (won ? ' win' : '') + (me ? '' : ' watch');
     $('#ticket-seat').textContent = me ? seatLabel(me.row, me.num) : '구경 중';
-    $('#ticket-result').textContent = me ? (won ? '당첨' : '꽝') : '당첨 대상이 아니에요';
+    $('#ticket-result').textContent = me ? resultText(won, round, isFinal) : '당첨 대상이 아니에요';
 
     // 긁어서 열릴 때는 덮개가 다 사라진 뒤(0.35초 페이드)에 하단 문구를 바꿔요.
     const finish = (afterFade) => {
@@ -194,6 +194,17 @@
       foot.innerHTML = `<p class="round-msg">${msg}</p>`;
     }
     updateFoot();
+  }
+
+  // 결과 문구: 좌석마다 시작 위치를 다르게 하고 라운드마다 하나씩 넘겨요.
+  // 새로고침해도 같은 문구가 나오고, 연속된 라운드에서는 문구가 겹치지 않아요.
+  function resultText(won, round, isFinal) {
+    const T = CFG.resultText;
+    if (won && isFinal) return T.winFinal;
+    const list = won ? T.win : T.lose;
+    let seed = 0;
+    for (const ch of me.key) seed = (seed * 31 + ch.charCodeAt(0)) % 997;
+    return list[(seed + round) % list.length];
   }
 
   // ---------- 진동 (안드로이드만 지원, 아이폰 웹은 진동 기능이 없어요) ----------

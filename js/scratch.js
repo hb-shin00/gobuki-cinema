@@ -115,11 +115,12 @@ window.ScratchCard = function (slotEl, { onReveal }) {
     const t = range.getBoundingClientRect();
     const b = canvas.getBoundingClientRect();
     if (!t.width || !b.width) return null;
-    // "꽝"처럼 글자가 짧으면 한 번에 다 덮이니, 판정 영역을 최소 170×80으로 넓혀요(붓 한 줄로는 다 안 덮여요).
+    // 판정 영역은 결과 글자 가운데를 중심으로 170×80 고정이에요.
+    // 문구 길이("꽝" ~ "명당은 아니었어요")와 상관없이 긁는 양이 같도록 해요.
     const cx = (t.left + t.right) / 2 - b.left;
     const cy = (t.top + t.bottom) / 2 - b.top;
-    const hw = Math.max(t.width, 170) / 2;
-    const hh = Math.max(t.height, 80) / 2;
+    const hw = 170 / 2;
+    const hh = 80 / 2;
     return { x0: cx - hw, x1: cx + hw, y0: cy - hh, y1: cy + hh };
   }
 
