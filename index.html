@@ -10,13 +10,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap">
-  <link rel="stylesheet" href="css/style.css?v=202610121645">
+  <link rel="stylesheet" href="css/style.css?v=202610121653">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute">
   <defs>
     <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8" fill="none" stroke="#1b1e24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-chevron" viewBox="0 0 16 16"><path d="M6 3l5 5-5 5" fill="none" stroke="#1b1e24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </defs>
 </svg>
 
@@ -78,13 +77,15 @@
       <p class="sub">게임이 시작되면 화면이 자동으로 넘어가요</p>
     </div>
     <div class="stage">
-      <button class="bubble hand link" data-go="list">럭키 시트 상품 보기 <svg><use href="#i-chevron"/></svg></button>
+      <button class="tooltip-btn" data-go="list" aria-label="럭키 시트 상품 보기"><img src="assets/FixedTooltip.svg" alt=""></button>
       <button class="clover-btn" data-go="list" aria-label="럭키 시트 상품 보기"><img src="assets/btn_clover.svg" alt=""></button>
       <div class="hero front">
         <img class="turtle" src="assets/turtle_front_trim.png" alt="인턴 고북희">
       </div>
     </div>
     <div class="bottom">
+      <!-- 실시간 참여 소식: 새로 들어온 사람을 한 명씩 보여줘요 -->
+      <p class="joiner" id="joiner" aria-live="polite"></p>
       <div class="info-card" id="wait-card">
         <img class="ico" id="wait-ok" src="assets/img_colored_success.svg" alt="">
         <img class="ico" id="wait-watch" src="assets/img_colored_triangle_warning.svg" alt="" hidden>
@@ -152,9 +153,9 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="js/config.js?v=202610121645"></script>
-<script src="js/store.js?v=202610121645"></script>
-<script src="js/scratch.js?v=202610121645"></script>
-<script src="js/app.js?v=202610121645"></script>
+<script src="js/config.js?v=202610121653"></script>
+<script src="js/store.js?v=202610121653"></script>
+<script src="js/scratch.js?v=202610121653"></script>
+<script src="js/app.js?v=202610121653"></script>
 </body>
 </html>

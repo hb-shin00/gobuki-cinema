@@ -207,6 +207,46 @@
     return list[(seed + round) % list.length];
   }
 
+  // ---------- 대기 화면 실시간 참여 소식 ----------
+  // 처음 열면 가장 최근 참여자를 보여주고, 이후 새로 들어온 사람을 한 명씩 2초 남짓 보여줘요.
+  // 한꺼번에 많이 들어오면 밀리지 않게 최근 3명만 남겨요. 마지막 소식은 다음 사람이 올 때까지 그대로 둬요.
+  let knownJoin = null;
+  let joinQueue = [];
+  let joinTimer = null;
+
+  function trackJoiners(s) {
+    const entries = Object.entries(s.participants);
+    if (!entries.length) {
+      knownJoin = new Set();
+      joinQueue = [];
+      $('#joiner').classList.remove('show');
+      return;
+    }
+    const byTime = (a, b) => (a[1].ts || 0) - (b[1].ts || 0);
+    if (!knownJoin) {
+      knownJoin = new Set(entries.map(([k]) => k));
+      joinQueue.push(entries.sort(byTime)[entries.length - 1]);
+    } else {
+      const fresh = entries.filter(([k]) => !knownJoin.has(k)).sort(byTime);
+      fresh.forEach(([k]) => knownJoin.add(k));
+      joinQueue.push(...fresh);
+      if (joinQueue.length > 3) joinQueue = joinQueue.slice(-3);
+    }
+    if (!joinTimer) nextJoiner();
+  }
+
+  function nextJoiner() {
+    if (!joinQueue.length) { joinTimer = null; return; }
+    const [, p] = joinQueue.shift();
+    const el = $('#joiner');
+    el.classList.remove('show');
+    joinTimer = setTimeout(() => {
+      el.textContent = `🎉 ${p.team} ${p.name}님이 참여했어요`;
+      el.classList.add('show');
+      joinTimer = setTimeout(nextJoiner, 2200);
+    }, 250);
+  }
+
   // ---------- 진동 (안드로이드만 지원, 아이폰 웹은 진동 기능이 없어요) ----------
   // 당첨: 짧게 세 번 + 길게 한 번(축하), 꽝: 짧게 두 번(아쉬움)
   function vibrate(won) {
@@ -270,6 +310,7 @@
       if (current !== 'form') show('intro');
     }
     renderWait();
+    trackJoiners(s);
     $('#btn-start').textContent = !me && isClosed() ? '구경하기' : '시작하기';
 
     const round = s.game.round;
