@@ -105,19 +105,9 @@ input { font: inherit; }
   position: relative; z-index: 2; flex: 1; min-height: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
 }
-.bubble {
-  position: relative; display: inline-flex; align-items: center; gap: 6px;
-  background: #fff; border-radius: 999px; padding: 0 calc(22px * var(--s));
-  height: calc(46px * var(--s)); min-height: 38px;
-  font-size: clamp(15px, 4.4vw, 17px); color: var(--ink); white-space: nowrap;
-  box-shadow: 0 2px 10px rgba(40, 90, 150, .08);
-  margin-bottom: calc(32px * var(--s));
-}
-.bubble::after {
-  content: ''; position: absolute; left: 50%; bottom: -6px; width: 12px; height: 12px;
-  background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 2px;
-}
-.bubble svg { width: 15px; height: 15px; }
+/* 말풍선: 시안 SVG(높이 59px, 꼬리 끝은 아래에서 4.7px 위)를 그대로 써요.
+   입장 start_FixedTooltip.svg, 종료 end_FixedTooltip.svg, 대기 FixedTooltip.svg */
+.tooltip-img { display: block; height: calc(59px * var(--s)); width: auto; margin-bottom: calc(19px * var(--s)); position: relative; z-index: 3; }
 /* 대기 화면 "럭키 시트 상품 보기" 말풍선(FixedTooltip.svg, 184×59).
    꼬리 끝이 이미지 아래에서 4.7px 위에 있어서, 꼬리 끝과 클로버 사이가 9px이 되도록 아래 여백을 맞춰요. */
 .tooltip-btn { display: block; width: calc(184px * var(--s)); margin-bottom: calc(25px * var(--s)); position: relative; z-index: 4; }
@@ -130,7 +120,7 @@ input { font: inherit; }
 /* 입장·대기 화면 거북이는 90% 크기.
    말풍선·클로버 위치는 그대로 두고, 거북이만 제자리에서 줄어든 것처럼 위아래 여백을 맞춰요. */
 #s-intro .turtle { width: calc(189px * var(--s)); margin-bottom: calc(10px * var(--s)); }
-#s-intro .bubble { margin-bottom: calc(46px * var(--s)); }
+#s-intro .tooltip-img { margin-bottom: calc(33px * var(--s)); }
 #s-intro .deco-l { left: calc(-70px * var(--s)); top: calc(-3px * var(--s)); }
 #s-intro .deco-br { right: calc(-70px * var(--s)); bottom: calc(-53px * var(--s)); }
 #s-wait .hero.front .turtle { width: calc(192px * var(--s)); margin-bottom: calc(10px * var(--s)); }
