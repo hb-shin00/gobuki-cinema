@@ -288,7 +288,7 @@
     if (wins.length) {
       const prize = store.roundPrize(Number(wins[0][0]));
       $('#end-title').textContent = `${prize.name} 당첨!`;
-      $('#end-desc').textContent = `${me.name}님, 경품은 사무실로 전달해 드릴게요`;
+      $('#end-desc').textContent = `${me.name}님, 경품은 사무실에서 받아요`;
     }
   }
 
