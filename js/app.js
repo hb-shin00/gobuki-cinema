@@ -163,7 +163,7 @@
     old.replaceWith(ticket);
     ticket.className = 'ticket' + (won ? ' win' : '') + (me ? '' : ' watch');
     $('#ticket-seat').textContent = me ? seatLabel(me.row, me.num) : '구경 중';
-    $('#ticket-result').textContent = me ? resultText(won, round, isFinal) : '당첨 대상이 아니에요';
+    $('#ticket-result').textContent = me ? resultText(won, round) : '당첨 대상이 아니에요';
 
     // 긁어서 열릴 때는 덮개가 다 사라진 뒤(0.35초 페이드)에 하단 문구를 바꿔요.
     const finish = (afterFade) => {
@@ -198,18 +198,14 @@
 
   // 결과 문구: 좌석마다 시작 위치를 다르게 하고 라운드마다 하나씩 넘겨요.
   // 새로고침해도 같은 문구가 나오고, 연속된 라운드에서는 문구가 겹치지 않아요.
-  function resultText(won, round, isFinal) {
-    const T = CFG.resultText;
-    if (won && isFinal) return T.winFinal;
-    const list = won ? T.win : T.lose;
-    let seed = 0;
-    for (const ch of me.key) seed = (seed * 31 + ch.charCodeAt(0)) % 997;
-    return list[(seed + round) % list.length];
+  function resultText(won, round) {
+    const list = won ? CFG.resultText.win : CFG.resultText.lose;
+    return list[Math.min(round, list.length) - 1];
   }
 
   // ---------- 대기 화면 실시간 참여 소식 ----------
-  // 처음 열면 가장 최근 참여자를 보여주고, 이후 새로 들어온 사람을 한 명씩 2초 남짓 보여줘요.
-  // 한꺼번에 많이 들어오면 밀리지 않게 최근 3명만 남겨요. 마지막 소식은 다음 사람이 올 때까지 그대로 둬요.
+  // 처음 열면 가장 최근 참여자를, 이후 새로 들어온 사람을 한 명씩 2초 보여주고 사라져요.
+  // 한꺼번에 많이 들어오면 밀리지 않게 최근 3명만 남겨요.
   let knownJoin = null;
   let joinQueue = [];
   let joinTimer = null;
@@ -243,7 +239,10 @@
     joinTimer = setTimeout(() => {
       el.textContent = `🎉 ${p.team} ${p.name}님이 참여했어요`;
       el.classList.add('show');
-      joinTimer = setTimeout(nextJoiner, 2200);
+      joinTimer = setTimeout(() => {
+        el.classList.remove('show'); // 2초 뒤 사라지고, 다음 사람이 있으면 이어서 보여줘요
+        joinTimer = setTimeout(nextJoiner, 300);
+      }, 2000);
     }, 250);
   }
 

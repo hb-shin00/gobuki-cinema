@@ -158,7 +158,6 @@ input { font: inherit; }
 /* 실시간 참여 소식 */
 .joiner {
   align-self: center; max-width: calc(100% - 10px); margin-bottom: calc(10px * var(--s));
-  padding: 6px 14px; border-radius: 999px; background: rgba(255, 255, 255, .8);
   font-size: 14px; font-weight: 600; color: var(--ink-2);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   opacity: 0; transform: translateY(6px); transition: opacity .3s, transform .3s;
